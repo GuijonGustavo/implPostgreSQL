@@ -4,9 +4,12 @@
 #include <stdint.h>
 #include <math.h>
 #include <libpq-fe.h>
+
+
 /* Para compilar: http://www.labbookpages.co.uk/software/imgProc/libPNG.html */
 
 /* A coloured pixel. */
+
 
 typedef struct {
     uint8_t red;
@@ -138,6 +141,15 @@ static int pix (int value, int max)
         return 0;
     return (int) (256.0 *((double) (value)/(double) max));
 }
+int draw ( );
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
 
 int main ()
 {
@@ -146,7 +158,7 @@ int main ()
     int y;
 	int rx; //Ancho 
 	int ry; //altura
-	int n; // numero de puntos
+//	int n; // numero de puntos
 	float i;
 	float j;
 //	int coor_p[p];
@@ -188,16 +200,56 @@ else
 	{
 		for (q = PQnfields(res)-1; q >= 0; q--)
 		{		
-		//	printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
-//		printf("\n"); 	
+			printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
+		printf("\n"); 	
 /* Aquí se llama a ala funci+on dibujar */
 
 //xmin=-10067673.868096 ymin=	1203424.573154 xmax=	-8717490.200654 ymax=	2553608.240596 
 
 //SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM tabla WHERE ST_Intersects(ST_GeomFromText('POLYGON((xmin ymin,xmax ymin,xmax ymax,xmin ymax,xmin ymin))',srid),the_geom);
 
-rx = 276;
-ry = 276;
+	draw ( );
+	}
+	/* Termina la función dibuja */
+	}
+//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
+	PQclear(res);
+}
+}
+PQfinish(conn);
+/* Termina Postgres */
+    /* Create an image. */
+			/* Write the image to a file 'fruit.png'. */
+    return 0;
+}
+
+
+				/* ----------  end of function main  ---------- */
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  This function draw in PNG
+ *  Description:  
+ * =====================================================================================
+ */
+	int
+draw ( )
+{
+	int x;
+	int y;
+	int rx;
+	int ry;
+    float c_x;
+	float c_y;
+	float i;
+	float j;
+    bitmap_t fruit;
+	float p, q;
+	PGresult *res;
+
+	rx = 276;
+ 	ry = 276;
 
 	fruit.width = rx;
     fruit.height = ry;
@@ -296,17 +348,10 @@ ry = 276;
             pixel_a2->blue = pix (i, j-2); /* abajo +2*/
 
 	}
-	}
-    save_png_to_file (& fruit, "wattie.png");
-	/* Termina la función dibuja */
-	}
-//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
-	PQclear(res);
-}
-}
-PQfinish(conn);
-/* Termina Postgres */
-    /* Create an image. */
-			/* Write the image to a file 'fruit.png'. */
-    return 0;
-}
+    save_png_to_file (& fruit, "implPostgresql.png");
+
+	return 0;
+}		/* -----  end of function draw  ----- */
+
+
+
