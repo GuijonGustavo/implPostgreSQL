@@ -4,12 +4,9 @@
 #include <stdint.h>
 #include <math.h>
 #include <libpq-fe.h>
-
-
 /* Para compilar: http://www.labbookpages.co.uk/software/imgProc/libPNG.html */
 
 /* A coloured pixel. */
-
 
 typedef struct {
     uint8_t red;
@@ -141,15 +138,6 @@ static int pix (int value, int max)
         return 0;
     return (int) (256.0 *((double) (value)/(double) max));
 }
-int draw ( );
-
-
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  main
- *  Description:  
- * =====================================================================================
- */
 
 int main ()
 {
@@ -158,7 +146,7 @@ int main ()
     int y;
 	int rx; //Ancho 
 	int ry; //altura
-//	int n; // numero de puntos
+	int n; // numero de puntos
 	float i;
 	float j;
 //	int coor_p[p];
@@ -167,7 +155,7 @@ int main ()
 	int a;
 	float c_x;
 	float c_y;
-
+//int xi, yi;
 /* Inicia Postgres */
 /* Para instalar libpq-fe.h: sudo apt-get install libpq-dev */
 /* Y para compilar:
@@ -178,7 +166,7 @@ PGconn *conn;
 PGresult *res;
 float p, q;
 
-conn = PQsetdbLogin("ip","5432",NULL,NULL,"database","user","password"); /* Con esta sentencia se establece la conexión (GENERAL)*/
+//conn = PQsetdbLogin("ip","5432",NULL,NULL,"database","user","password"); /* Con esta sentencia se establece la conexión (GENERAL)*/
 conn = PQsetdbLogin("db0.conabio.gob.mx","5435",NULL,NULL,"snib","postgres","conabio2008"); /* Con esta sentencia se establece la conexión */
 
 if (PQstatus(conn) == CONNECTION_BAD)
@@ -188,85 +176,64 @@ printf("Unable to connect to database\n");
 else 
 {
 	/* Query 1 */
-	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11295558.290298 3732572.964702,-10620466.456577 3732572.964702,-10620466.456577 4407664.798423,-11295558.290298 4407664.798423,-11295558.290298 3732572.964702))',900913),the_geom);");
+//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11295558.290298 3732572.964702,-10620466.456577 3732572.964702,-10620466.456577 4407664.798423,-11295558.290298 4407664.798423,-11295558.290298 3732572.964702))',900913),the_geom);");
 
 //http://geoportal.conabio.gob.mx/pmngr_bis?SRS=EPSG%3A900913&STYLES=&LAYERS=plantae_selector&FORMAT=image%2Fpng&VERSION=1.1.1&TRANSPARENT=TRUE&SERVICE=WMS&REQUE ST=GetMap&QTYPE=getSld&NQ=1&OPID=intersects&BBOX=-10067673.868096%2C1203424.573154%2C-8717490.200654%2C2553608.240596&WIDTH=276&HEIGHT=276
 
 	/* Query 2 */
-//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10067673.868096 1203424.573154,-8717490.200654 1203424.573154,-8717490.200654 2553608.240596,-10067673.868096 2553608.240596,-10067673.868096 1203424.573154))',900913),the_geom);");
+	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10067673.868096 1203424.573154,-8717490.200654 1203424.573154,-8717490.200654 2553608.240596,-10067673.868096 2553608.240596,-10067673.868096 1203424.573154))',900913),the_geom);");
 	
 	if (res != NULL && PGRES_TUPLES_OK == PQresultStatus(res)){
 	for (p = PQntuples(res)-1; p >= 0; p--)
 	{
 		for (q = PQnfields(res)-1; q >= 0; q--)
 		{		
-			printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
-		printf("\n"); 	
+		//	printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
+//		printf("\n"); 	
 /* Aquí se llama a ala funci+on dibujar */
 
-//xmin=-10067673.868096 ymin=	1203424.573154 xmax=	-8717490.200654 ymax=	2553608.240596 
+//xmin=-10067673.868096 ymin=1203424.573154 xmax=-8717490.200654 ymax=2553608.240596 
 
 //SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM tabla WHERE ST_Intersects(ST_GeomFromText('POLYGON((xmin ymin,xmax ymin,xmax ymax,xmin ymax,xmin ymin))',srid),the_geom);
 
-	draw ( );
-	}
-	/* Termina la función dibuja */
-	}
-//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
-	PQclear(res);
-}
-}
-PQfinish(conn);
-/* Termina Postgres */
-    /* Create an image. */
-			/* Write the image to a file 'fruit.png'. */
-    return 0;
-}
+//rx = 256;
+//ry = 256;
 
-
-				/* ----------  end of function main  ---------- */
-
-
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  This function draw in PNG
- *  Description:  
- * =====================================================================================
- */
-	int
-draw ( )
-{
-	int x;
-	int y;
-	int rx;
-	int ry;
-    float c_x;
-	float c_y;
-	float i;
-	float j;
-    bitmap_t fruit;
-	float p, q;
-	PGresult *res;
-
-	rx = 276;
- 	ry = 276;
-
-	fruit.width = rx;
-    fruit.height = ry;
-
+	fruit.width = 256;
+    fruit.height = 256;
+    
     fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
 
-	for (y = ry; ry < fruit.height; ry++) {
-        for (x = rx; rx < fruit.width; rx++) {
-            pixel_t * pixel = pixel_at (& fruit, rx, ry);
-            pixel->red = pix (rx, fruit.width);  /* Poner esto para cada color */
-            pixel->green = pix (ry, fruit.height);
-        //    pixel->alpha = pix (rx, fruit.width);
-         //   pixel->alpha = pix (ry, fruit.height);
+	for (y = 256; y < fruit.height; y++) {
+        for (x = 256; x < fruit.width; x++) {
+            pixel_t * pixel = pixel_at (& fruit, x, y);
+          //  pixel->red = pix (x, fruit.width);  /* Poner esto para cada color */
+          //  pixel->red = pix (y, fruit.width);  /* Poner esto para cada color */
+          //  pixel->green = pix (x, fruit.width);  /* Poner esto para cada color */
+          //  pixel->green = pix (y, fruit.height);
+          //  pixel->blue = pix (x, fruit.width);
+          //  pixel->blue = pix (y, fruit.height);
 		}
 	}
 
- 		   fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
+//rx = 256;
+//ry = 256;
+
+//	fruit.width = rx;
+//    fruit.height = ry;
+
+    
+  //  fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
+
+//	for (y = ry; ry < fruit.height; ry++) {
+//        for (x = rx; rx < fruit.width; rx++) {
+      //      pixel_t * pixel = pixel_at (& fruit, rx, ry);
+    //        pixel->red = pix (rx, fruit.width);  /* Poner esto para cada color */
+  //          pixel->green = pix (ry, fruit.height);
+        //    pixel->alpha = pix (rx, fruit.width);
+         //   pixel->alpha = pix (ry, fruit.height);
+//		}
+//	}
 //	for (a = 0; a < n; a++){
 	for (p = PQntuples(res)-1; p >=0; p--){
 
@@ -282,12 +249,12 @@ draw ( )
 	 //j = 276*((abs(c_y-(ymin)))/ymax-ymin);;
 
 /* Query 2 */
-//	   	i = 276*((abs(c_x-(-10067673.868096)))/1350183.667442);
-//	    j = 276*((abs(c_y-(1203424.573154)))/1350183.667442);
+	   	i = 256*((abs(c_x-(-10067673.868096)))/1350183.667442);
+	    j = 256*((abs(c_y-(1203424.573154)))/1350183.667442);
 	 
 /* Query 1 */
-	i = 276*((abs(c_x-(-11295558.290298)))/675091.833721);
-	j = 276*((abs(c_y-(3732572.964702)))/675091.833721);
+//	i = 256*((abs(c_x-(-11295558.290298)))/675091.833721);
+//	j = 256*((abs(c_y-(3732572.964702)))/675091.833721);
 
 /* Pixel central */
 
@@ -347,11 +314,20 @@ draw ( )
             pixel_A2->blue = pix (i, j+2); /* Arriba +2*/
             pixel_a2->blue = pix (i, j-2); /* abajo +2*/
 
+	
 	}
+		}
     save_png_to_file (& fruit, "implPostgresql.png");
-
-	return 0;
-}		/* -----  end of function draw  ----- */
-
-
-
+	free(fruit.pixels);
+	/* Termina la función dibuja */
+	}
+//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
+	PQclear(res);
+}
+}
+PQfinish(conn);
+/* Termina Postgres */
+    /* Create an image. */
+			/* Write the image to a file 'fruit.png'. */
+    return 0;
+}
