@@ -9,10 +9,10 @@
 /* A coloured pixel. */
 
 typedef struct {
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
-  	float alpha; //canal de transparencia
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
+	float alpha; //canal de transparencia
 } pixel_t;
 
 /* A picture. */
@@ -141,205 +141,185 @@ static int pix (int value, int max)
 
 int main ()
 {
-    bitmap_t fruit;
-    int x;
-    int y;
-//	int rx; //Ancho 
-//	int ry; //altura
-//	int n; // numero de puntos
-	float i;
-	float j;
-//	int coor_p[p];
-//	int coor_q[q];
-//	int coor[1][2];
-//	int a;
-	float c_x;
-	float c_y;
-//int xi, yi;
-/* Inicia Postgres */
-/* Para instalar libpq-fe.h: sudo apt-get install libpq-dev */
-/* Y para compilar:
- *
-	gcc -lm -lpng -lpq -o fruit fruit.c -I/usr/include/postgresql/  */
+	int x,y;
+	float i, j, c_x, c_y;
+	bitmap_t fruit;
 
-PGconn *conn;
-PGresult *res;
-float p, q;
+	/* Inicia Postgres */
+	/* Para instalar libpq-fe.h: sudo apt-get install libpq-dev */
+	/* Y para compilar:
+	 *
+	 gcc -lm -lpng -lpq -o fruit fruit.c -I/usr/include/postgresql/  */
 
-//conn = PQsetdbLogin("ip","5432",NULL,NULL,"database","user","password"); /* Con esta sentencia se establece la conexión (GENERAL)*/
-conn = PQsetdbLogin("db0.conabio.gob.mx","5435",NULL,NULL,"snib","postgres","conabio2008"); /* Con esta sentencia se establece la conexión */
+	PGconn *conn;
+	PGresult *res;
+	float p, q;
 
-if (PQstatus(conn) == CONNECTION_BAD)
+	conn = PQsetdbLogin("ip","5432",NULL,NULL,"database","user","password"); /* Con esta sentencia se establece la conexión (GENERAL)*/
+	conn = PQsetdbLogin("db0.conabio.gob.mx","5435",NULL,NULL,"snib","postgres","conabio2008"); /* Con esta sentencia se establece la conexión */
 
-printf("Unable to connect to database\n");
+	if (PQstatus(conn) == CONNECTION_BAD)
 
-else 
-{
-	/* Query 1 */
-//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11295558.290298 3732572.964702,-10620466.456577 3732572.964702,-10620466.456577 4407664.798423,-11295558.290298 4407664.798423,-11295558.290298 3732572.964702))',900913),the_geom);");
+		printf("Unable to connect to database\n");
 
-//http://geoportal.conabio.gob.mx/pmngr_bis?SRS=EPSG%3A900913&STYLES=&LAYERS=plantae_selector&FORMAT=image%2Fpng&VERSION=1.1.1&TRANSPARENT=TRUE&SERVICE=WMS&REQUE ST=GetMap&QTYPE=getSld&NQ=1&OPID=intersects&BBOX=-10067673.868096%2C1203424.573154%2C-8717490.200654%2C2553608.240596&WIDTH=276&HEIGHT=276
-
-	/* Query 2 */
-//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10067673.868096 1203424.573154,-8717490.200654 1203424.573154,-8717490.200654 2553608.240596,-10067673.868096 2553608.240596,-10067673.868096 1203424.573154))',900913),the_geom);");
-	
-	/* Query 3 */
-//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 -10657156.230149,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
-	/* Query 4 */
-//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10333368.978378 2072666.458692,-10291175.738771 2072666.458692,-10291175.738771 2114859.6983,-10333368.978378 2114859.6983,-10333368.978378 2072666.458692))',900913),the_geom);");
-	
-	/* Query 5 */
-	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
-	
-	
-	if (res != NULL && PGRES_TUPLES_OK == PQresultStatus(res)){
-	for (p = PQntuples(res)-1; p >= 0; p--)
+	else 
 	{
-		for (q = PQnfields(res)-1; q >= 0; q--)
-		{		
-//			printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
-//		printf("\n"); 	
-/* Aquí se llama a ala funci+on dibujar */
+		/* Query 1 */
+//			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11295558.290298 3732572.964702,-10620466.456577 3732572.964702,-10620466.456577 4407664.798423,-11295558.290298 4407664.798423,-11295558.290298 3732572.964702))',900913),the_geom);");
 
-//xmin=-10067673.868096 ymin=1203424.573154 xmax=-8717490.200654 ymax=2553608.240596 
+		//http://geoportal.conabio.gob.mx/pmngr_bis?SRS=EPSG%3A900913&STYLES=&LAYERS=plantae_selector&FORMAT=image%2Fpng&VERSION=1.1.1&TRANSPARENT=TRUE&SERVICE=WMS&REQUE ST=GetMap&QTYPE=getSld&NQ=1&OPID=intersects&BBOX=-10067673.868096%2C1203424.573154%2C-8717490.200654%2C2553608.240596&WIDTH=276&HEIGHT=276
 
-//SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM tabla WHERE ST_Intersects(ST_GeomFromText('POLYGON((xmin ymin,xmax ymin,xmax ymax,xmin ymax,xmin ymin))',srid),the_geom);
+		/* Query 2 */
+			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10067673.868096 1203424.573154,-8717490.200654 1203424.573154,-8717490.200654 2553608.240596,-10067673.868096 2553608.240596,-10067673.868096 1203424.573154))',900913),the_geom);");
 
-/* Dibuja de color el cuadrito */
+		/* Query 3 */
+		//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
+		/* Query 4 */
+		//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10333368.978378 2072666.458692,-10291175.738771 2072666.458692,-10291175.738771 2114859.6983,-10333368.978378 2114859.6983,-10333368.978378 2072666.458692))',900913),the_geom);");
 
+		/* Query 5 */
+		//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
 
-	fruit.width = 1000;
-    fruit.height = 1000;
-    
-    fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
+		/* Query 6 */
+//		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
 
-	for (y = 0; y < fruit.height; y++) {
-        for (x = 0; x < fruit.width; x++) {
-            pixel_t * pixel = pixel_at (& fruit, x, y);
-  //          pixel->red = pix (x, fruit.width);  /* Poner esto para cada color */
-    //        pixel->red = pix (y, fruit.width);  /* Poner esto para cada color */
-      //      pixel->green = pix (x, fruit.width);  /* Poner esto para cada color */
-        //    pixel->green = pix (y, fruit.height);
-    //        pixel->blue = pix (x, fruit.width);
-      //      pixel->blue = pix (y, fruit.height);
+		if (res != NULL && PGRES_TUPLES_OK == PQresultStatus(res)){
+			for (p = PQntuples(res)-1; p >= 0; p--)
+			{
+				for (q = PQnfields(res)-1; q >= 0; q--)
+				{		
+			//			printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
+			//			printf("\n"); 	
+					/* Aquí se llama a ala funci+on dibujar */
+
+					//SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM tabla WHERE ST_Intersects(ST_GeomFromText('POLYGON((xmin ymin,xmax ymin,xmax ymax,xmin ymax,xmin ymin))',srid),the_geom);
+
+					/* Dibuja de color el cuadrito */
+				
+					fruit.width = 1000;
+					fruit.height = 1000;
+
+					fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
+
+					for (x = 0; x < fruit.height; x++) {
+						for (y = 0; y < fruit.width; y++) {
+							pixel_t * pixel = pixel_at (& fruit, x, y);
+							//  pixel->red = pix (x, fruit.width);  /* Poner esto para cada color */
+							//  pixel->red = pix (y, fruit.width);  /* Poner esto para cada color */
+							//  pixel->green = pix (x, fruit.width);  /* Poner esto para cada color */
+							//  pixel->green = pix (y, fruit.height);
+							//  pixel->blue = pix (x, fruit.width);
+							//  pixel->blue = pix (y, fruit.height);
+						}
+					}
+
+						/* Termina de dibujar el cuadrito */
+
+					/* Dibuja los puntos */
+					for (p = PQntuples(res)-1; p >=0; p--){
+
+						/* Aqu+í va la conversion:
+						 * |x_max -x_min| = 256
+						 * |x - x_min|    = i
+						 * */
+						c_x = atof(PQgetvalue(res, p, 0));
+						c_y = atof(PQgetvalue(res, p, 1));
+
+						//i = 256*((abs(c_x-(xmin)))/xmax-xmin);
+						//j = 256*((abs(c_y-(ymin)))/ymax-ymin);;
+
+						/* Query 1 */
+	//						i = 1000*((abs(c_x-(-11295558.290298)))/675091.833721);
+	//						j = 1000*((abs(c_y-(3732572.964702)))/675091.833721);
+
+						/* Query 2 */
+							   	i = 1000*((abs(c_x-(-10067673.868096)))/1350183.667442);
+							    j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
+						/* Query 3 */
+						//	  i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
+						//      j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
+						/* Query 4 */
+						//	   	i = 1000*((abs(c_x-(-10333368.978378)))/12406035.437070);
+						//	    j = 1000*((abs(c_y-(2072666.458692)))/12406035.437070);
+						/* Query 5 */
+						//	   	i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
+						//	    j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
+						/* Query 6 */
+		//				i = 1000*((abs(c_x-(-11320018.139346)))/1350183.667442);
+		//				j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
+						/* Pixel central */
+
+						pixel_t * pixel_C = pixel_at (& fruit, i, j); /* Central */
+	//					pixel_t * pixel_D = pixel_at (& fruit, i+1, j); /* Derecha */
+	//					pixel_t * pixel_I = pixel_at (& fruit, i-1, j); /* Izquierda */
+	//					pixel_t * pixel_A = pixel_at (& fruit, i, j+1); /* Arriba */
+	//					pixel_t * pixel_a = pixel_at (& fruit, i, j-1); /* abajo */
+	//					pixel_t * pixel_aD = pixel_at (& fruit, i+1, j-1); /* abajo-Derecha */
+	//					pixel_t * pixel_AD = pixel_at (& fruit, i+1, j+1); /* Arriba-Derecha */
+	//					pixel_t * pixel_AI = pixel_at (& fruit, i-1, j+1); /* Arriba-Izquierda */
+	//					pixel_t * pixel_aI = pixel_at (& fruit, i-1, j-1); /* abajo-Izquierda */
+	//					pixel_t * pixel_D2 = pixel_at (& fruit, i+2, j); /* Derecha +2*/
+	//					pixel_t * pixel_I2 = pixel_at (& fruit, i-2, j); /* Izquierda +2*/
+	//					pixel_t * pixel_A2 = pixel_at (& fruit, i, j+2); /* Arriba +2*/
+	//					pixel_t * pixel_a2 = pixel_at (& fruit, i, j-2); /* abajo +2*/
+
+						pixel_C->red = pix (i, j);  /* Central */
+	//					pixel_D->red = pix (i+1, j);  /* Derecha */
+	//					pixel_I->red = pix (i-1, j);  /* Izquierda */ 
+	//					pixel_A->red = pix (i, j+1); /* Arriba */  
+	//					pixel_a->red = pix (i, j-1); /* abajo */
+	//					pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
+//						pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
+//						pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
+//						pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
+//						pixel_D2->red = pix (i+2, j);  /* Derecha +2*/
+//						pixel_I2->red = pix (i-2, j);  /* Izquierda +2*/ 
+//						pixel_A2->red = pix (i, j+2); /* Arriba +2*/  
+//						pixel_a2->red = pix (i, j-2); /* abajo +2*/
+
+						pixel_C->green = pix (i, j);  /* Central */
+//						pixel_D->green = pix (i+1, j); /* Derecha */
+//						pixel_I->green = pix (i-1, j);  /* Izquierda */
+//						pixel_A->green = pix (i, j+1); /* Arriba */
+//						pixel_a->green = pix (i, j-1); /* abajo */
+//						pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
+//						pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
+//						pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
+//						pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
+//						pixel_D2->green = pix (i+2, j); /* Derecha +2*/
+//						pixel_I2->green = pix (i-2, j);  /* Izquierda +2*/
+//						pixel_A2->green = pix (i, j+2); /* Arriba +2*/
+//						pixel_a2->green = pix (i, j-2); /* abajo +2*/
+
+						pixel_C->blue = pix (i, j);  /* Central */
+//						pixel_D->blue = pix (i+1, j); /* Derecha */
+//						pixel_I->blue = pix (i-1, j); /* Izquierda */
+//						pixel_A->blue = pix (i, j+1); /* Arriba */
+//						pixel_a->blue = pix (i, j-1); /* abajo */
+//						pixel_aD->blue = pix (i+1, j-1); /* abajo-Derecha */
+//						pixel_AD->blue = pix (i+1, j+1); /* Arriba-Derecha */
+//						pixel_AI->blue = pix (i-1, j+1); /* Arriba-Izquierda */
+//						pixel_aI->blue = pix (i-1, j-1); /* abajo-Izquierda */
+//						pixel_D2->blue = pix (i+2, j); /* Derecha +2*/
+//						pixel_I2->blue = pix (i-2, j); /* Izquierda +2*/
+//						pixel_A2->blue = pix (i, j+2); /* Arriba +2*/
+//						pixel_a2->blue = pix (i, j-2); /* abajo +2*/
+
+						/* Termina de dibujar los puntos */
+
+					}
+				}	
+				save_png_to_file (& fruit, "implPostgresql.png");
+				free(fruit.pixels);
+				/* Termina la función dibuja */
+			}
+			//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
+			PQclear(res);
 		}
 	}
-
-/* Termina de dibujar el cuadrito */
-
-/* Dibuja los puntos */
-	for (p = PQntuples(res)-1; p >=0; p--){
-
-/* Aqu+í va la conversion:
- * |x_max -x_min| = 256
- * |x - x_min|    = i
- * */
-
-		c_x = atof(PQgetvalue(res, p, 0));
-		c_y = atof(PQgetvalue(res, p, 1));
-
-     //i = 256*((abs(c_x-(xmin)))/xmax-xmin);
-	 //j = 256*((abs(c_y-(ymin)))/ymax-ymin);;
-	 
-/* Query 1 */
-//	i = 1000*((abs(c_x-(-11295558.290298)))/675091.833721);
-//	j = 1000*((abs(c_y-(3732572.964702)))/675091.833721);
-
-/* Query 2 */
-//	   	i = 276*((abs(c_x-(-10067673.868096)))/1350183.667442);
-//	    j = 276*((abs(c_y-(1203424.573154)))/1350183.667442);
-/* Query 3 */
-	//   	i = 276*((abs(c_x-(-10657156.230149)))/337545.916861);
-	  //  j = 276*((abs(c_y-(1866286.482351)))/337545.916861);
-/* Query 4 */
-//	   	i = 276*((abs(c_x-(-10333368.978378)))/12406035.437070);
-//	    j = 276*((abs(c_y-(2072666.458692)))/12406035.437070);
-/* Query 4 */
-//	   	i = 1000*((abs(c_x-(-11320018.139346)))/1350183.667442);
-//	    j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
-/* Query 5 */
-	   	i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
-	    j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
-/* Pixel central */
-
-            pixel_t * pixel_C = pixel_at (& fruit, i, j); /* Central */
-            pixel_t * pixel_D = pixel_at (& fruit, i+1, j); /* Derecha */
-            pixel_t * pixel_I = pixel_at (& fruit, i-1, j); /* Izquierda */
-            pixel_t * pixel_A = pixel_at (& fruit, i, j+1); /* Arriba */
-            pixel_t * pixel_a = pixel_at (& fruit, i, j-1); /* abajo */
-            pixel_t * pixel_aD = pixel_at (& fruit, i+1, j-1); /* abajo-Derecha */
-            pixel_t * pixel_AD = pixel_at (& fruit, i+1, j+1); /* Arriba-Derecha */
-            pixel_t * pixel_AI = pixel_at (& fruit, i-1, j+1); /* Arriba-Izquierda */
-            pixel_t * pixel_aI = pixel_at (& fruit, i-1, j-1); /* abajo-Izquierda */
-            pixel_t * pixel_D2 = pixel_at (& fruit, i+2, j); /* Derecha +2*/
-            pixel_t * pixel_I2 = pixel_at (& fruit, i-2, j); /* Izquierda +2*/
-            pixel_t * pixel_A2 = pixel_at (& fruit, i, j+2); /* Arriba +2*/
-            pixel_t * pixel_a2 = pixel_at (& fruit, i, j-2); /* abajo +2*/
-         
-            pixel_C->red = pix (i, j);  /* Central */
-            pixel_D->red = pix (i+1, j);  /* Derecha */
-            pixel_I->red = pix (i-1, j);  /* Izquierda */ 
-            pixel_A->red = pix (i, j+1); /* Arriba */  
-            pixel_a->red = pix (i, j-1); /* abajo */
-            pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
-            pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
-            pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
-            pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
-            pixel_D2->red = pix (i+2, j);  /* Derecha +2*/
-            pixel_I2->red = pix (i-2, j);  /* Izquierda +2*/ 
-            pixel_A2->red = pix (i, j+2); /* Arriba +2*/  
-            pixel_a2->red = pix (i, j-2); /* abajo +2*/
-
-            pixel_C->green = pix (i, j);  /* Central */
-            pixel_D->green = pix (i+1, j); /* Derecha */
-            pixel_I->green = pix (i-1, j);  /* Izquierda */
-            pixel_A->green = pix (i, j+1); /* Arriba */
-            pixel_a->green = pix (i, j-1); /* abajo */
-            pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
-            pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
-            pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
-            pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
-            pixel_D2->green = pix (i+2, j); /* Derecha +2*/
-            pixel_I2->green = pix (i-2, j);  /* Izquierda +2*/
-            pixel_A2->green = pix (i, j+2); /* Arriba +2*/
-            pixel_a2->green = pix (i, j-2); /* abajo +2*/
-
-            pixel_C->blue = pix (i, j);  /* Central */
-            pixel_D->blue = pix (i+1, j); /* Derecha */
-            pixel_I->blue = pix (i-1, j); /* Izquierda */
-            pixel_A->blue = pix (i, j+1); /* Arriba */
-            pixel_a->blue = pix (i, j-1); /* abajo */
-            pixel_aD->blue = pix (i+1, j-1); /* abajo-Derecha */
-            pixel_AD->blue = pix (i+1, j+1); /* Arriba-Derecha */
-            pixel_AI->blue = pix (i-1, j+1); /* Arriba-Izquierda */
-            pixel_aI->blue = pix (i-1, j-1); /* abajo-Izquierda */
-            pixel_D2->blue = pix (i+2, j); /* Derecha +2*/
-            pixel_I2->blue = pix (i-2, j); /* Izquierda +2*/
-            pixel_A2->blue = pix (i, j+2); /* Arriba +2*/
-            pixel_a2->blue = pix (i, j-2); /* abajo +2*/
-
-			/* Termina de dibujar los puntos */
-	
-	}
-
-
-
-
-
-
-
-		}
-    save_png_to_file (& fruit, "implPostgresql.png");
-	free(fruit.pixels);
-	/* Termina la función dibuja */
-	}
-//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
-	PQclear(res);
-}
-}
-PQfinish(conn);
-/* Termina Postgres */
-    /* Create an image. */
-			/* Write the image to a file 'fruit.png'. */
-    return 0;
+	PQfinish(conn);
+	/* Termina Postgres */
+	/* Create an image. */
+	/* Write the image to a file 'fruit.png'. */
+	return 0;
 }
