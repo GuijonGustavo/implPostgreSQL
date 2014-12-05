@@ -12,7 +12,7 @@ typedef struct {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
-	float alpha; //canal de transparencia
+	uint8_t transparency; //canal de transparencia
 } pixel_t;
 
 /* A picture. */
@@ -28,8 +28,8 @@ typedef struct {
 
 static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 {
+   //   return bitmap->pixels + bitmap->width * y + x;
       return bitmap->pixels + bitmap->width * y + x;
-//      return bitmap->pixels + bitmap->height + bitmap->width;
 }
     
 /* Write "bitmap" to a PNG file specified by "path"; returns 0 on
@@ -52,6 +52,7 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
     */
     int pixel_size = 3;
     int depth = 8;
+
     
     fp = fopen (path, "wb");
     if (! fp) {
@@ -67,7 +68,6 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
     if (info_ptr == NULL) {
         goto png_create_info_struct_failed;
     }
-    
     /* Set up error handling. */
 
     if (setjmp (png_jmpbuf (png_ptr))) {
@@ -81,9 +81,13 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
                   bitmap->width,
                   bitmap->height,
                   depth,
-                  PNG_COLOR_TYPE_RGB,
+//                PNG_COLOR_TYPE_RGB,
+                  PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
                   PNG_INTERLACE_NONE,
                   PNG_COMPRESSION_TYPE_DEFAULT,
+//				  PNG_COLOR_TYPE_RGB_ALPHA, /* TRansparencia */
+//				  PNG_INFO_tRNS,    /* Según esta página este es el canal alpha  http://www.piko3d.net/tutorials/libpng-tutorial-loading-png-files-from-streams/  */
+//				  PNG_FILLER_AFTER, /* Para transparencia */
                   PNG_FILTER_TYPE_DEFAULT);
     
     /* Initialize rows of PNG. */
@@ -98,7 +102,8 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
             *row++ = pixel->red;
             *row++ = pixel->green;
             *row++ = pixel->blue;
-          //  *row++ = pixel->alpha; //transparencia
+		    	
+//            *row++ = pixel->transparency;											 //transparencia
 
         }
     }
@@ -107,7 +112,9 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
 
     png_init_io (png_ptr, fp);
     png_set_rows (png_ptr, info_ptr, row_pointers);
+//	png_set_tRNS_to_alpha(png_ptr); 										 /* Para transparencia */
     png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+//    png_set_add_alpha(png_ptr, 0xff, PNG_FILLER_AFTER); 					  /* Para transparencia */
 
     /* The routine has successfully written the file, so we set
        "status" to a value which indicates success. */
@@ -165,23 +172,23 @@ int main ()
 	else 
 	{
 		/* Query 1 */
-//			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11295558.290298 3732572.964702,-10620466.456577 3732572.964702,-10620466.456577 4407664.798423,-11295558.290298 4407664.798423,-11295558.290298 3732572.964702))',900913),the_geom);");
+	//		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11295558.290298 3732572.964702,-10620466.456577 3732572.964702,-10620466.456577 4407664.798423,-11295558.290298 4407664.798423,-11295558.290298 3732572.964702))',900913),the_geom);");
 
 		//http://geoportal.conabio.gob.mx/pmngr_bis?SRS=EPSG%3A900913&STYLES=&LAYERS=plantae_selector&FORMAT=image%2Fpng&VERSION=1.1.1&TRANSPARENT=TRUE&SERVICE=WMS&REQUE ST=GetMap&QTYPE=getSld&NQ=1&OPID=intersects&BBOX=-10067673.868096%2C1203424.573154%2C-8717490.200654%2C2553608.240596&WIDTH=276&HEIGHT=276
 
 		/* Query 2 */
-			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10067673.868096 1203424.573154,-8717490.200654 1203424.573154,-8717490.200654 2553608.240596,-10067673.868096 2553608.240596,-10067673.868096 1203424.573154))',900913),the_geom);");
+		//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10067673.868096 1203424.573154,-8717490.200654 1203424.573154,-8717490.200654 2553608.240596,-10067673.868096 2553608.240596,-10067673.868096 1203424.573154))',900913),the_geom);");
 
 		/* Query 3 */
-		//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
+//			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
 		/* Query 4 */
-		//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10333368.978378 2072666.458692,-10291175.738771 2072666.458692,-10291175.738771 2114859.6983,-10333368.978378 2114859.6983,-10333368.978378 2072666.458692))',900913),the_geom);");
+	//		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10333368.978378 2072666.458692,-10291175.738771 2072666.458692,-10291175.738771 2114859.6983,-10333368.978378 2114859.6983,-10333368.978378 2072666.458692))',900913),the_geom);");
 
 		/* Query 5 */
-		//	res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
+//			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
 
 		/* Query 6 */
-//		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
+		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
 
 		if (res != NULL && PGRES_TUPLES_OK == PQresultStatus(res)){
 			for (p = PQntuples(res)-1; p >= 0; p--)
@@ -204,12 +211,14 @@ int main ()
 					for (x = 0; x < fruit.height; x++) {
 						for (y = 0; y < fruit.width; y++) {
 							pixel_t * pixel = pixel_at (& fruit, x, y);
-							//  pixel->red = pix (x, fruit.width);  /* Poner esto para cada color */
-							//  pixel->red = pix (y, fruit.width);  /* Poner esto para cada color */
-							//  pixel->green = pix (x, fruit.width);  /* Poner esto para cada color */
-							//  pixel->green = pix (y, fruit.height);
-							//  pixel->blue = pix (x, fruit.width);
-							//  pixel->blue = pix (y, fruit.height);
+				//			  pixel->transparency = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
+					//		  pixel->transparency = pix (x, y);  /* Poner esto para cada color */
+				//			  pixel->transparency = pix (y, fruit.height);  /* Poner esto para cada color */
+				//			  pixel->red = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
+			//				  pixel->green = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
+				//			  pixel->green = pix (fruit.width, fruit.height);
+			//				  pixel->blue = pix (x, y);   /* Con esto se dibuja el partrón de olas */
+				//			  pixel->blue = pix (fruit.width, fruit.height);
 						}
 					}
 
@@ -229,15 +238,15 @@ int main ()
 						//j = 256*((abs(c_y-(ymin)))/ymax-ymin);;
 
 						/* Query 1 */
-	//						i = 1000*((abs(c_x-(-11295558.290298)))/675091.833721);
-	//						j = 1000*((abs(c_y-(3732572.964702)))/675091.833721);
+					//		i = 1000*((abs(c_x-(-11295558.290298)))/675091.833721);
+					//		j = 1000*((abs(c_y-(3732572.964702)))/675091.833721);
 
 						/* Query 2 */
-							   	i = 1000*((abs(c_x-(-10067673.868096)))/1350183.667442);
-							    j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
+	//						   	i = 1000*((abs(c_x-(-10067673.868096)))/1350183.667442);
+	//						    j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
 						/* Query 3 */
-						//	  i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
-						//      j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
+				//			  i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
+				//		      j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
 						/* Query 4 */
 						//	   	i = 1000*((abs(c_x-(-10333368.978378)))/12406035.437070);
 						//	    j = 1000*((abs(c_y-(2072666.458692)))/12406035.437070);
@@ -245,8 +254,8 @@ int main ()
 						//	   	i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
 						//	    j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
 						/* Query 6 */
-		//				i = 1000*((abs(c_x-(-11320018.139346)))/1350183.667442);
-		//				j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
+						i = 1000*((abs(c_x-(-11320018.139346)))/1350183.667442);
+						j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
 						/* Pixel central */
 
 						pixel_t * pixel_C = pixel_at (& fruit, i, j); /* Central */
@@ -262,6 +271,12 @@ int main ()
 	//					pixel_t * pixel_I2 = pixel_at (& fruit, i-2, j); /* Izquierda +2*/
 	//					pixel_t * pixel_A2 = pixel_at (& fruit, i, j+2); /* Arriba +2*/
 	//					pixel_t * pixel_a2 = pixel_at (& fruit, i, j-2); /* abajo +2*/
+
+
+
+//						pixel_C->transparency = pix (i, j);  /* Central */
+
+
 
 						pixel_C->red = pix (i, j);  /* Central */
 	//					pixel_D->red = pix (i+1, j);  /* Derecha */
