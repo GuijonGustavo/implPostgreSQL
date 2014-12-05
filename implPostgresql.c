@@ -12,7 +12,7 @@ typedef struct {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
-	uint8_t transparency; //canal de transparencia
+//	uint8_t transparency; //canal de transparencia
 } pixel_t;
 
 /* A picture. */
@@ -28,8 +28,8 @@ typedef struct {
 
 static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 {
-   //   return bitmap->pixels + bitmap->width * y + x;
-      return bitmap->pixels + bitmap->width * y + x;
+     return bitmap->pixels + bitmap->height * y + x;
+//     return bitmap->pixels + x * y;  /* Dibujo raro. :-) */
 }
     
 /* Write "bitmap" to a PNG file specified by "path"; returns 0 on
@@ -68,7 +68,7 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
     if (info_ptr == NULL) {
         goto png_create_info_struct_failed;
     }
-    /* Set up error handling. */
+    /* Set up error handling. Este if chance y lo puedo quitar */
 
     if (setjmp (png_jmpbuf (png_ptr))) {
         goto png_failure;
@@ -81,8 +81,8 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
                   bitmap->width,
                   bitmap->height,
                   depth,
-//                PNG_COLOR_TYPE_RGB,
-                  PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
+    //              PNG_COLOR_TYPE_RGB,
+                PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
                   PNG_INTERLACE_NONE,
                   PNG_COMPRESSION_TYPE_DEFAULT,
 //				  PNG_COLOR_TYPE_RGB_ALPHA, /* TRansparencia */
@@ -94,8 +94,7 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
 
     row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
     for (y = 0; y < bitmap->height; ++y) {
-        png_byte *row = 
-            png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * pixel_size);
+        png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * pixel_size);
         row_pointers[y] = row;
         for (x = 0; x < bitmap->width; ++x) {
             pixel_t * pixel = pixel_at (bitmap, x, y);
@@ -143,7 +142,8 @@ static int pix (int value, int max)
 {
     if (value < 0)
         return 0;
-    return (int) (1000.0 *((double) (value)/(double) max));
+   // return (int) (256.0 *((double) (value)/(double) max));  /* Esto es lo que hce que se haga como abanico */
+        return (int) 255.0;
 }
 
 int main ()
@@ -210,12 +210,12 @@ int main ()
 
 					for (x = 0; x < fruit.height; x++) {
 						for (y = 0; y < fruit.width; y++) {
-							pixel_t * pixel = pixel_at (& fruit, x, y);
+							pixel_t * pixel = pixel_at (& fruit, x ,y);
 				//			  pixel->transparency = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
 					//		  pixel->transparency = pix (x, y);  /* Poner esto para cada color */
 				//			  pixel->transparency = pix (y, fruit.height);  /* Poner esto para cada color */
-				//			  pixel->red = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
-			//				  pixel->green = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
+//							  pixel->red = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
+//							  pixel->green = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
 				//			  pixel->green = pix (fruit.width, fruit.height);
 			//				  pixel->blue = pix (x, y);   /* Con esto se dibuja el partrón de olas */
 				//			  pixel->blue = pix (fruit.width, fruit.height);
