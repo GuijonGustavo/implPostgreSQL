@@ -81,8 +81,8 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
                   bitmap->width,
                   bitmap->height,
                   depth,
-    //              PNG_COLOR_TYPE_RGB,
-                PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
+                  PNG_COLOR_TYPE_RGB,  
+              	//PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
                   PNG_INTERLACE_NONE,
                   PNG_COMPRESSION_TYPE_DEFAULT,
 //				  PNG_COLOR_TYPE_RGB_ALPHA, /* TRansparencia */
