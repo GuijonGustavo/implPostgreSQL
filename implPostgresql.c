@@ -81,8 +81,8 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
                   bitmap->width,
                   bitmap->height,
                   depth,
-                  PNG_COLOR_TYPE_RGB,  
-           //   	PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
+              //    PNG_COLOR_TYPE_RGB,  
+              	PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
                   PNG_INTERLACE_NONE,
                   PNG_COMPRESSION_TYPE_DEFAULT,
 //				  PNG_COLOR_TYPE_RGB_ALPHA, /* TRansparencia */
@@ -96,14 +96,14 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
 
     row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
     for (y = 0; y < bitmap->height; ++y) {
-        png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * pixel_size);
+        png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * 4);
         row_pointers[y] = row;
         for (x = 0; x < bitmap->width; ++x) {
             pixel_t * pixel = pixel_at (bitmap, x, y);
             *row++ = pixel->red;
             *row++ = pixel->green;
             *row++ = pixel->blue;
-		    	
+		   *row++ = 230; 	
 //            *row++ = pixel->transparency;											 //transparencia
 
         }
