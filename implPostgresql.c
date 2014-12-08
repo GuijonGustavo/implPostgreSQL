@@ -82,14 +82,16 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
                   bitmap->height,
                   depth,
                   PNG_COLOR_TYPE_RGB,  
-              	//PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
+           //   	PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
                   PNG_INTERLACE_NONE,
                   PNG_COMPRESSION_TYPE_DEFAULT,
 //				  PNG_COLOR_TYPE_RGB_ALPHA, /* TRansparencia */
 //				  PNG_INFO_tRNS,    /* Según esta página este es el canal alpha  http://www.piko3d.net/tutorials/libpng-tutorial-loading-png-files-from-streams/  */
 //				  PNG_FILLER_AFTER, /* Para transparencia */
                   PNG_FILTER_TYPE_DEFAULT);
-    
+
+
+
     /* Initialize rows of PNG. */
 
     row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
@@ -208,8 +210,8 @@ int main ()
 
 					fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
 
-					for (x = 0; x < fruit.height; x++) {
-						for (y = 0; y < fruit.width; y++) {
+					for (x = 0; x < fruit.width; x++) {
+						for (y = 0; y < fruit.height; y++) {
 							pixel_t * pixel = pixel_at (& fruit, x ,y);
 				//			  pixel->transparency = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
 					//		  pixel->transparency = pix (x, y);  /* Poner esto para cada color */
@@ -258,7 +260,8 @@ int main ()
 						j = 1000*((abs(c_y-(1203424.573154)))/1350183.667442);
 						/* Pixel central */
 
-						pixel_t * pixel_C = pixel_at (& fruit, i, j); /* Central */
+
+						pixel_t * pixel_C = pixel_at (& fruit, i, 1000-j); /* Central */    /* A quí hay que restarle j a la resolución por que el (0,0 esta en la esquina superior izquierda) */
 	//					pixel_t * pixel_D = pixel_at (& fruit, i+1, j); /* Derecha */
 	//					pixel_t * pixel_I = pixel_at (& fruit, i-1, j); /* Izquierda */
 	//					pixel_t * pixel_A = pixel_at (& fruit, i, j+1); /* Arriba */
@@ -279,7 +282,7 @@ int main ()
 
 
 						pixel_C->red = pix (i, j);  /* Central */
-	//					pixel_D->red = pix (i+1, j);  /* Derecha */
+//						pixel_D->red = pix (i+1, j);  /* Derecha */
 	//					pixel_I->red = pix (i-1, j);  /* Izquierda */ 
 	//					pixel_A->red = pix (i, j+1); /* Arriba */  
 	//					pixel_a->red = pix (i, j-1); /* abajo */
