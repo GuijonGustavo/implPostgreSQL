@@ -98,13 +98,21 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
     for (y = 0; y < bitmap->height; ++y) {
         png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * 4);
         row_pointers[y] = row;
-        for (x = 0; x < bitmap->width; ++x) {
+		
+        for (x = 0; x < bitmap->width; ++x) {		
+			int hdata = 0;
             pixel_t * pixel = pixel_at (bitmap, x, y);
             *row++ = pixel->red;
+			hdata += pixel-> red;
             *row++ = pixel->green;
+			hdata += pixel-> green;
             *row++ = pixel->blue;
-		    *row++ = 255; 	
-
+			hdata += pixel-> blue;
+			if(hdata==0){
+		    	*row++ = 0;
+			}else{
+				*row++ = 255;
+			}
         }
     }
     
@@ -192,10 +200,10 @@ int main ()
 		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
 
 		if (res != NULL && PGRES_TUPLES_OK == PQresultStatus(res)){
-			for (p = PQntuples(res)-1; p >= 0; p--)
-			{
-				for (q = PQnfields(res)-1; q >= 0; q--)
-				{		
+			//for (p = PQntuples(res)-1; p >= 0; p--)
+			//{
+				//for (q = PQnfields(res)-1; q >= 0; q--)
+			//	{		
 			//			printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
 			//			printf("\n"); 	
 					/* Aquí se llama a ala funci+on dibujar */
@@ -209,9 +217,9 @@ int main ()
 
 					fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
 
-					for (x = 0; x < fruit.width; x++) {
-						for (y = 0; y < fruit.height; y++) {
-							pixel_t * pixel = pixel_at (& fruit, x ,y);
+			//		for (x = 0; x < fruit.width; x++) {
+			//			for (y = 0; y < fruit.height; y++) {
+			//				pixel_t * pixel = pixel_at (& fruit, x ,y);
 							 
 				//			  pixel->transparency = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
 					//		  pixel->transparency = pix (x, y);  /* Poner esto para cada color */
@@ -221,8 +229,8 @@ int main ()
 				//			  pixel->green = pix (fruit.width, fruit.height);
 			//				  pixel->blue = pix (x, y);   /* Con esto se dibuja el partrón de olas */
 				//			  pixel->blue = pix (fruit.width, fruit.height);
-						}
-					}
+			//			}
+			//		}
 
 						/* Termina de dibujar el cuadrito */
 
@@ -322,11 +330,12 @@ int main ()
 						/* Termina de dibujar los puntos */
 
 					}
-				}	
+			//	}	
+	//		printf ( "%s", fruit);	/* Para salida a buffer */
 				save_png_to_file (& fruit, "implPostgresql.png");
 				free(fruit.pixels);
 				/* Termina la función dibuja */
-			}
+	//		}
 			//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
 			PQclear(res);
 		}
