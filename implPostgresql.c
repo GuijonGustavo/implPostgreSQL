@@ -12,7 +12,6 @@ typedef struct {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
-//	uint8_t transparency; //canal de transparencia
 } pixel_t;
 
 /* A picture. */
@@ -29,7 +28,6 @@ typedef struct {
 static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 {
      return bitmap->pixels + bitmap->height * y + x;
-//     return bitmap->pixels + x * y;  /* Dibujo raro. :-) */
 }
     
 /* Write "bitmap" to a PNG file specified by "path"; returns 0 on
@@ -81,16 +79,10 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
                   bitmap->width,
                   bitmap->height,
                   depth,
-              //    PNG_COLOR_TYPE_RGB,  
               	PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
                   PNG_INTERLACE_NONE,
                   PNG_COMPRESSION_TYPE_DEFAULT,
-//				  PNG_COLOR_TYPE_RGB_ALPHA, /* TRansparencia */
-//				  PNG_INFO_tRNS,    /* Según esta página este es el canal alpha  http://www.piko3d.net/tutorials/libpng-tutorial-loading-png-files-from-streams/  */
-//				  PNG_FILLER_AFTER, /* Para transparencia */
                   PNG_FILTER_TYPE_DEFAULT);
-
-
 
     /* Initialize rows of PNG. */
 
@@ -120,9 +112,7 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
 
     png_init_io (png_ptr, fp);
     png_set_rows (png_ptr, info_ptr, row_pointers);
-//	png_set_tRNS_to_alpha(png_ptr); 										 /* Para transparencia */
     png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-//    png_set_add_alpha(png_ptr, 0xff, PNG_FILLER_AFTER); 					  /* Para transparencia */
 
     /* The routine has successfully written the file, so we set
        "status" to a value which indicates success. */
@@ -151,7 +141,6 @@ static int pix (int value, int max)
 {
     if (value < 0)
         return 0;
-   // return (int) (256.0 *((double) (value)/(double) max));  /* Esto es lo que hce que se haga como abanico */
         return (int) 255.0;
 }
 
@@ -200,12 +189,6 @@ int main ()
 		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
 
 		if (res != NULL && PGRES_TUPLES_OK == PQresultStatus(res)){
-			//for (p = PQntuples(res)-1; p >= 0; p--)
-			//{
-				//for (q = PQnfields(res)-1; q >= 0; q--)
-			//	{		
-			//			printf("%s\t",PQgetvalue(res,p,q));  /* No se que onda con estos dos, creo que no hay que imprimir */
-			//			printf("\n"); 	
 					/* Aquí se llama a ala funci+on dibujar */
 
 					//SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM tabla WHERE ST_Intersects(ST_GeomFromText('POLYGON((xmin ymin,xmax ymin,xmax ymax,xmin ymax,xmin ymin))',srid),the_geom);
@@ -216,21 +199,6 @@ int main ()
 					fruit.height = 1000;
 
 					fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
-
-			//		for (x = 0; x < fruit.width; x++) {
-			//			for (y = 0; y < fruit.height; y++) {
-			//				pixel_t * pixel = pixel_at (& fruit, x ,y);
-							 
-				//			  pixel->transparency = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
-					//		  pixel->transparency = pix (x, y);  /* Poner esto para cada color */
-				//			  pixel->transparency = pix (y, fruit.height);  /* Poner esto para cada color */
-//							  pixel->red = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
-//							  pixel->green = pix (fruit.width, fruit.height);  /* Poner esto para cada color */
-				//			  pixel->green = pix (fruit.width, fruit.height);
-			//				  pixel->blue = pix (x, y);   /* Con esto se dibuja el partrón de olas */
-				//			  pixel->blue = pix (fruit.width, fruit.height);
-			//			}
-			//		}
 
 						/* Termina de dibujar el cuadrito */
 
@@ -330,12 +298,10 @@ int main ()
 						/* Termina de dibujar los puntos */
 
 					}
-			//	}	
 	//		printf ( "%s", fruit);	/* Para salida a buffer */
 				save_png_to_file (& fruit, "implPostgresql.png");
 				free(fruit.pixels);
 				/* Termina la función dibuja */
-	//		}
 			//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
 			PQclear(res);
 		}
