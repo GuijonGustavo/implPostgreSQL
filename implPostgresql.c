@@ -146,7 +146,7 @@ static int pix (int value, int max)
 
 int main ()
 {
-	int x,y;
+	int r,x,y;
 	float i, j, c_x, c_y;
 	bitmap_t fruit;
 
@@ -203,7 +203,7 @@ int main ()
 						/* Termina de dibujar el cuadrito */
 
 					/* Dibuja los puntos */
-					for (p = PQntuples(res)-1; p >=0; p--){
+					for (p = PQntuples(res)-1; p >=0; p--){/* ************************************************************************************************ */
 
 						/* Aqu+í va la conversion:
 						 * |x_max -x_min| = 256
@@ -232,8 +232,8 @@ int main ()
 						//	   	i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
 						//	    j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
 						/* Query 6 */
-						i = 999*((abs(c_x-(-11320018.139346)))/1350183.667442); /* Está ajustado a 999 para que baje un pixel y se pueda dibujar toda la bolita */
-						j = 999*((abs(c_y-(1203424.573154)))/1350183.667442);
+						i = 998*((abs(c_x-(-11320018.139346)))/1350183.667442); /* Está ajustado a 999 para que baje un pixel y se pueda dibujar toda la bolita. Caso 6 se le restan 2 */
+						j = 998*((abs(c_y-(1203424.573154)))/1350183.667442);
 						j = 1000-j; /* Para que se ajuste al cuadro pues la coordenada (0,0) está en la esquina superior izquierda.  */
 
 						/* Pixel central */
@@ -252,52 +252,514 @@ int main ()
 						pixel_t * pixel_I2 = pixel_at (& fruit, i-2, j); /* Izquierda +2*/
 						pixel_t * pixel_A2 = pixel_at (& fruit, i, j+2); /* Arriba +2*/
 						pixel_t * pixel_a2 = pixel_at (& fruit, i, j-2); /* abajo +2*/
+						pixel_t * pixel_a4 = pixel_at (& fruit, i-1, j+2); /*arriba j+2 */
+						pixel_t * pixel_b4 = pixel_at (& fruit, i, j+2); /*arriba j+2*/
+						pixel_t * pixel_c4 = pixel_at (& fruit, i+1, j+2); /* arriba j+2*/
+						pixel_t * pixel_d4 = pixel_at (& fruit, i-1, j-2); /*arriba j+2 */
+						pixel_t * pixel_e4 = pixel_at (& fruit, i, j-2); /*arriba j+2*/
+						pixel_t * pixel_f4 = pixel_at (& fruit, i+1, j-2); /* arriba j+2*/
+						pixel_t * pixel_g4 = pixel_at (& fruit, i+2, j+1); /*arriba j+2 */
+						pixel_t * pixel_h4 = pixel_at (& fruit, i+2, j); /*arriba j+2*/
+						pixel_t * pixel_i4 = pixel_at (& fruit, i+2, j-1); /* arriba j+2*/
+						pixel_t * pixel_j4 = pixel_at (& fruit, i-2, j+1); /*arriba j+2 */
+						pixel_t * pixel_k4 = pixel_at (& fruit, i-2, j); /*arriba j+2*/
+						pixel_t * pixel_l4 = pixel_at (& fruit, i-2, j-1); /* arriba j+2*/
+						pixel_t * pixel_a5 = pixel_at (& fruit, i+2, j+2); /* arriba j+2*/
+						pixel_t * pixel_b5 = pixel_at (& fruit, i+2, j-2); /*arriba j+2 */
+						pixel_t * pixel_c5 = pixel_at (& fruit, i-2, j+2); /*arriba j+2*/
+						pixel_t * pixel_d5 = pixel_at (& fruit, i-2, j-2); /* arriba j+2*/
+						pixel_t * pixel_a6 = pixel_at (& fruit, i-1, j+3); /* arriba j+2*/
+						pixel_t * pixel_b6 = pixel_at (& fruit, i, j+3); /*arriba j+2 */
+						pixel_t * pixel_c6 = pixel_at (& fruit, i+1, j+3); /*arriba j+2*/
+						pixel_t * pixel_d6 = pixel_at (& fruit, i-1, j-3); /* arriba j+2*/
+						pixel_t * pixel_e6 = pixel_at (& fruit, i, j-3); /*arriba j+2 */
+						pixel_t * pixel_f6 = pixel_at (& fruit, i+1, j-3); /*arriba j+2*/
+						pixel_t * pixel_g6 = pixel_at (& fruit, i-3, j+1); /* arriba j+2*/
+						pixel_t * pixel_h6 = pixel_at (& fruit, i-3, j); /*arriba j+2 */
+						pixel_t * pixel_i6 = pixel_at (& fruit, i-3, j-1); /*arriba j+2*/
+						pixel_t * pixel_j6 = pixel_at (& fruit, i+3, j+1); /* arriba j+2*/
+						pixel_t * pixel_k6 = pixel_at (& fruit, i+3, j); /*arriba j+2 */
+						pixel_t * pixel_l6 = pixel_at (& fruit, i+3, j-1); /*arriba j+2*/
+						pixel_t * pixel_a7 = pixel_at (& fruit, i+2, j+3); /*arriba j+2 */
+						pixel_t * pixel_b7 = pixel_at (& fruit, i+3, j+2); /*arriba j+2*/
+						pixel_t * pixel_c7 = pixel_at (& fruit, i-2, j+3); /*arriba j+2 */
+						pixel_t * pixel_d7 = pixel_at (& fruit, i-3, j+2); /*arriba j+2*/
+						pixel_t * pixel_e7 = pixel_at (& fruit, i+2, j-3); /*arriba j+2 */
+						pixel_t * pixel_f7 = pixel_at (& fruit, i+3, j-2); /*arriba j+2*/
+						pixel_t * pixel_g7 = pixel_at (& fruit, i-2, j-3); /*arriba j+2 */
+						pixel_t * pixel_h7 = pixel_at (& fruit, i-3, j-2); /*arriba j+2*/
+
+
+
+						switch ( r = 7 ) {
+							case 1:
+						pixel_C->red = pix (i, j);  /* Central */
+						pixel_C->green = pix (i, j);  /* Central */
+						pixel_C->blue = pix (i, j);  /* Central */
+								break;
+
+							case 2:	
+						pixel_C->red = pix (i, j);  /* Central */
+						pixel_D->red = pix (i+1, j);  /* Derecha */
+						pixel_I->red = pix (i-1, j);  /* Izquierda */ 
+						pixel_A->red = pix (i, j+1); /* Arriba */  
+						pixel_a->red = pix (i, j-1); /* abajo */
+						pixel_C->green = pix (i, j);  /* Central */
+						pixel_D->green = pix (i+1, j); /* Derecha */
+						pixel_I->green = pix (i-1, j);  /* Izquierda */
+						pixel_A->green = pix (i, j+1); /* Arriba */
+						pixel_a->green = pix (i, j-1); /* abajo */
+						pixel_C->blue = pix (i, j);  /* Central */
+						pixel_D->blue = pix (i+1, j); /* Derecha */
+						pixel_I->blue = pix (i-1, j); /* Izquierda */
+						pixel_A->blue = pix (i, j+1); /* Arriba */
+						pixel_a->blue = pix (i, j-1); /* abajo */
+								break;
+
+							case 3:
+						pixel_C->red = pix (i, j);  /* Central */
+						pixel_D->red = pix (i+1, j);  /* Derecha */
+						pixel_I->red = pix (i-1, j);  /* Izquierda */ 
+						pixel_A->red = pix (i, j+1); /* Arriba */  
+						pixel_a->red = pix (i, j-1); /* abajo */
+						pixel_C->green = pix (i, j);  /* Central */
+						pixel_D->green = pix (i+1, j); /* Derecha */
+						pixel_I->green = pix (i-1, j);  /* Izquierda */
+						pixel_A->green = pix (i, j+1); /* Arriba */
+						pixel_a->green = pix (i, j-1); /* abajo */
+						pixel_C->blue = pix (i, j);  /* Central */
+						pixel_D->blue = pix (i+1, j); /* Derecha */
+						pixel_I->blue = pix (i-1, j); /* Izquierda */
+						pixel_A->blue = pix (i, j+1); /* Arriba */
+						pixel_a->blue = pix (i, j-1); /* abajo */
+						pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->blue = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->blue = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->blue = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->blue = pix (i-1, j-1); /* abajo-Izquierda */
+								break;
+
+							case 4:
+						pixel_C->red = pix (i, j);  /* Central */
+						pixel_D->red = pix (i+1, j);  /* Derecha */
+						pixel_I->red = pix (i-1, j);  /* Izquierda */ 
+						pixel_A->red = pix (i, j+1); /* Arriba */  
+						pixel_a->red = pix (i, j-1); /* abajo */
+						pixel_C->green = pix (i, j);  /* Central */
+						pixel_D->green = pix (i+1, j); /* Derecha */
+						pixel_I->green = pix (i-1, j);  /* Izquierda */
+						pixel_A->green = pix (i, j+1); /* Arriba */
+						pixel_a->green = pix (i, j-1); /* abajo */
+						pixel_C->blue = pix (i, j);  /* Central */
+						pixel_D->blue = pix (i+1, j); /* Derecha */
+						pixel_I->blue = pix (i-1, j); /* Izquierda */
+						pixel_A->blue = pix (i, j+1); /* Arriba */
+						pixel_a->blue = pix (i, j-1); /* abajo */
+						pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->blue = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->blue = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->blue = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->blue = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_a4->red = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->red = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->red = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->red = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->red = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->red = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->red = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->red = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->red = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->red = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->red = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->red = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->green = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->green = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->green = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->green = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->green = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->green = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->green = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->green = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->green = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->green = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->green = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->green = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->blue = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->blue = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->blue = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->blue = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->blue = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->blue = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->blue = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->blue = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->blue = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->blue = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->blue = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->blue = pix (i-2, j-1); /* arriba j+2*/
+								break;
+
+							case 5:
+						pixel_C->red = pix (i, j);  /* Central */
+						pixel_D->red = pix (i+1, j);  /* Derecha */
+						pixel_I->red = pix (i-1, j);  /* Izquierda */ 
+						pixel_A->red = pix (i, j+1); /* Arriba */  
+						pixel_a->red = pix (i, j-1); /* abajo */
+						pixel_C->green = pix (i, j);  /* Central */
+						pixel_D->green = pix (i+1, j); /* Derecha */
+						pixel_I->green = pix (i-1, j);  /* Izquierda */
+						pixel_A->green = pix (i, j+1); /* Arriba */
+						pixel_a->green = pix (i, j-1); /* abajo */
+						pixel_C->blue = pix (i, j);  /* Central */
+						pixel_D->blue = pix (i+1, j); /* Derecha */
+						pixel_I->blue = pix (i-1, j); /* Izquierda */
+						pixel_A->blue = pix (i, j+1); /* Arriba */
+						pixel_a->blue = pix (i, j-1); /* abajo */
+						pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->blue = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->blue = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->blue = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->blue = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_a4->red = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->red = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->red = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->red = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->red = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->red = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->red = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->red = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->red = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->red = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->red = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->red = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->green = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->green = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->green = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->green = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->green = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->green = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->green = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->green = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->green = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->green = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->green = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->green = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->blue = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->blue = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->blue = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->blue = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->blue = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->blue = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->blue = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->blue = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->blue = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->blue = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->blue = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->blue = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a5->red = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->red = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->red = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->red = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a5->green = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->green = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->green = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->green = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a5->blue = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->blue = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->blue = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->blue = pix (i-2, j-2); /* arriba j+2*/
+								break;
+
+
+
+								case 6:
+
 
 						pixel_C->red = pix (i, j);  /* Central */
 						pixel_D->red = pix (i+1, j);  /* Derecha */
 						pixel_I->red = pix (i-1, j);  /* Izquierda */ 
 						pixel_A->red = pix (i, j+1); /* Arriba */  
 						pixel_a->red = pix (i, j-1); /* abajo */
-						pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
-						pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
-						pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
-						pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
-						pixel_D2->red = pix (i+2, j);  /* Derecha +2*/
-						pixel_I2->red = pix (i-2, j);  /* Izquierda +2*/ 
-						pixel_A2->red = pix (i, j+2); /* Arriba +2*/  
-						pixel_a2->red = pix (i, j-2); /* abajo +2*/
-
 						pixel_C->green = pix (i, j);  /* Central */
 						pixel_D->green = pix (i+1, j); /* Derecha */
 						pixel_I->green = pix (i-1, j);  /* Izquierda */
 						pixel_A->green = pix (i, j+1); /* Arriba */
 						pixel_a->green = pix (i, j-1); /* abajo */
-						pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
-						pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
-						pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
-						pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
-						pixel_D2->green = pix (i+2, j); /* Derecha +2*/
-						pixel_I2->green = pix (i-2, j);  /* Izquierda +2*/
-						pixel_A2->green = pix (i, j+2); /* Arriba +2*/
-						pixel_a2->green = pix (i, j-2); /* abajo +2*/
-
 						pixel_C->blue = pix (i, j);  /* Central */
 						pixel_D->blue = pix (i+1, j); /* Derecha */
 						pixel_I->blue = pix (i-1, j); /* Izquierda */
 						pixel_A->blue = pix (i, j+1); /* Arriba */
 						pixel_a->blue = pix (i, j-1); /* abajo */
+						pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
 						pixel_aD->blue = pix (i+1, j-1); /* abajo-Derecha */
 						pixel_AD->blue = pix (i+1, j+1); /* Arriba-Derecha */
 						pixel_AI->blue = pix (i-1, j+1); /* Arriba-Izquierda */
 						pixel_aI->blue = pix (i-1, j-1); /* abajo-Izquierda */
-						pixel_D2->blue = pix (i+2, j); /* Derecha +2*/
-						pixel_I2->blue = pix (i-2, j); /* Izquierda +2*/
-						pixel_A2->blue = pix (i, j+2); /* Arriba +2*/
-						pixel_a2->blue = pix (i, j-2); /* abajo +2*/
+						pixel_a4->red = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->red = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->red = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->red = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->red = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->red = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->red = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->red = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->red = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->red = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->red = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->red = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->green = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->green = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->green = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->green = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->green = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->green = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->green = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->green = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->green = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->green = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->green = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->green = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->blue = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->blue = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->blue = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->blue = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->blue = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->blue = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->blue = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->blue = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->blue = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->blue = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->blue = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->blue = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a5->red = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->red = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->red = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->red = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a5->green = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->green = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->green = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->green = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a5->blue = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->blue = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->blue = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->blue = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a6-> red = pix (i-1, j+3); /* arriba j+2*/
+						pixel_b6-> red = pix (i, j+3); /*arriba j+2 */
+						pixel_c6-> red = pix (i+1, j+3); /*arriba j+2*/
+						pixel_d6-> red = pix (i-1, j-3); /* arriba j+2*/
+						pixel_e6-> red = pix (i, j-3); /*arriba j+2 */
+						pixel_f6-> red = pix (i+1, j-3); /*arriba j+2*/
+						pixel_g6-> red = pix (i-3, j+1); /* arriba j+2*/
+						pixel_h6-> red = pix (i-3, j); /*arriba j+2 */
+						pixel_i6-> red = pix (i-3, j-1); /*arriba j+2*/
+						pixel_j6-> red = pix (i+3, j+1); /* arriba j+2*/
+						pixel_k6-> red = pix (i+3, j); /*arriba j+2 */
+						pixel_l6-> red = pix (i+3, j-1); /*arriba j+2*/
+						pixel_a6-> green = pix (i-1, j+3); /* arriba j+2*/
+						pixel_b6-> green = pix (i, j+3); /*arriba j+2 */
+						pixel_c6-> green = pix (i+1, j+3); /*arriba j+2*/
+						pixel_d6-> green = pix (i-1, j-3); /* arriba j+2*/
+						pixel_e6-> green = pix (i, j-3); /*arriba j+2 */
+						pixel_f6-> green = pix (i+1, j-3); /*arriba j+2*/
+						pixel_g6-> green = pix (i-3, j+1); /* arriba j+2*/
+						pixel_h6-> green = pix (i-3, j); /*arriba j+2 */
+						pixel_i6-> green = pix (i-3, j-1); /*arriba j+2*/
+						pixel_j6-> green = pix (i+3, j+1); /* arriba j+2*/
+						pixel_k6-> green = pix (i+3, j); /*arriba j+2 */
+						pixel_l6-> green = pix (i+3, j-1); /*arriba j+2*/
+						pixel_a6-> blue = pix (i-1, j+3); /* arriba j+2*/
+						pixel_b6-> blue = pix (i, j+3); /*arriba j+2 */
+						pixel_c6-> blue = pix (i+1, j+3); /*arriba j+2*/
+						pixel_d6-> blue = pix (i-1, j-3); /* arriba j+2*/
+						pixel_e6-> blue = pix (i, j-3); /*arriba j+2 */
+						pixel_f6-> blue = pix (i+1, j-3); /*arriba j+2*/
+						pixel_g6-> blue = pix (i-3, j+1); /* arriba j+2*/
+						pixel_h6-> blue = pix (i-3, j); /*arriba j+2 */
+						pixel_i6-> blue = pix (i-3, j-1); /*arriba j+2*/
+						pixel_j6-> blue = pix (i+3, j+1); /* arriba j+2*/
+						pixel_k6-> blue = pix (i+3, j); /*arriba j+2 */
+						pixel_l6-> blue = pix (i+3, j-1); /*arriba j+2*/
+								break;
+
+
+
+								case 7:
+
+
+						pixel_C->red = pix (i, j);  /* Central */
+						pixel_D->red = pix (i+1, j);  /* Derecha */
+						pixel_I->red = pix (i-1, j);  /* Izquierda */ 
+						pixel_A->red = pix (i, j+1); /* Arriba */  
+						pixel_a->red = pix (i, j-1); /* abajo */
+						pixel_C->green = pix (i, j);  /* Central */
+						pixel_D->green = pix (i+1, j); /* Derecha */
+						pixel_I->green = pix (i-1, j);  /* Izquierda */
+						pixel_A->green = pix (i, j+1); /* Arriba */
+						pixel_a->green = pix (i, j-1); /* abajo */
+						pixel_C->blue = pix (i, j);  /* Central */
+						pixel_D->blue = pix (i+1, j); /* Derecha */
+						pixel_I->blue = pix (i-1, j); /* Izquierda */
+						pixel_A->blue = pix (i, j+1); /* Arriba */
+						pixel_a->blue = pix (i, j-1); /* abajo */
+						pixel_aD->red = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->red = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->red = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->red = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->green = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->green = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->green = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->green = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_aD->blue = pix (i+1, j-1); /* abajo-Derecha */
+						pixel_AD->blue = pix (i+1, j+1); /* Arriba-Derecha */
+						pixel_AI->blue = pix (i-1, j+1); /* Arriba-Izquierda */
+						pixel_aI->blue = pix (i-1, j-1); /* abajo-Izquierda */
+						pixel_a4->red = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->red = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->red = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->red = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->red = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->red = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->red = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->red = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->red = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->red = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->red = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->red = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->green = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->green = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->green = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->green = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->green = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->green = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->green = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->green = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->green = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->green = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->green = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->green = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a4->blue = pix (i-1, j+2); /*arriba j+2 */
+						pixel_b4->blue = pix (i, j+2); /*arriba j+2*/
+						pixel_c4->blue = pix (i+1, j+2); /* arriba j+2*/
+						pixel_d4->blue = pix (i-1, j-2); /*arriba j+2 */
+						pixel_e4->blue = pix (i, j-2); /*arriba j+2*/
+						pixel_f4->blue = pix (i+1, j-2); /* arriba j+2*/
+						pixel_g4->blue = pix (i+2, j+1); /*arriba j+2 */
+						pixel_h4->blue = pix (i+2, j); /*arriba j+2*/
+						pixel_i4->blue = pix (i+2, j-1); /* arriba j+2*/
+						pixel_j4->blue = pix (i-2, j+1); /*arriba j+2 */
+						pixel_k4->blue = pix (i-2, j); /*arriba j+2*/
+						pixel_l4->blue = pix (i-2, j-1); /* arriba j+2*/
+						pixel_a5->red = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->red = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->red = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->red = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a5->green = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->green = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->green = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->green = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a5->blue = pix (i+2, j+2); /* arriba j+2*/
+						pixel_b5->blue = pix (i+2, j-2); /*arriba j+2 */
+						pixel_c5->blue = pix (i-2, j+2); /*arriba j+2*/
+						pixel_d5->blue = pix (i-2, j-2); /* arriba j+2*/
+						pixel_a6-> red = pix (i-1, j+3); /* arriba j+2*/
+						pixel_b6-> red = pix (i, j+3); /*arriba j+2 */
+						pixel_c6-> red = pix (i+1, j+3); /*arriba j+2*/
+						pixel_d6-> red = pix (i-1, j-3); /* arriba j+2*/
+						pixel_e6-> red = pix (i, j-3); /*arriba j+2 */
+						pixel_f6-> red = pix (i+1, j-3); /*arriba j+2*/
+						pixel_g6-> red = pix (i-3, j+1); /* arriba j+2*/
+						pixel_h6-> red = pix (i-3, j); /*arriba j+2 */
+						pixel_i6-> red = pix (i-3, j-1); /*arriba j+2*/
+						pixel_j6-> red = pix (i+3, j+1); /* arriba j+2*/
+						pixel_k6-> red = pix (i+3, j); /*arriba j+2 */
+						pixel_l6-> red = pix (i+3, j-1); /*arriba j+2*/
+						pixel_a6-> green = pix (i-1, j+3); /* arriba j+2*/
+						pixel_b6-> green = pix (i, j+3); /*arriba j+2 */
+						pixel_c6-> green = pix (i+1, j+3); /*arriba j+2*/
+						pixel_d6-> green = pix (i-1, j-3); /* arriba j+2*/
+						pixel_e6-> green = pix (i, j-3); /*arriba j+2 */
+						pixel_f6-> green = pix (i+1, j-3); /*arriba j+2*/
+						pixel_g6-> green = pix (i-3, j+1); /* arriba j+2*/
+						pixel_h6-> green = pix (i-3, j); /*arriba j+2 */
+						pixel_i6-> green = pix (i-3, j-1); /*arriba j+2*/
+						pixel_j6-> green = pix (i+3, j+1); /* arriba j+2*/
+						pixel_k6-> green = pix (i+3, j); /*arriba j+2 */
+						pixel_l6-> green = pix (i+3, j-1); /*arriba j+2*/
+						pixel_a6-> blue = pix (i-1, j+3); /* arriba j+2*/
+						pixel_b6-> blue = pix (i, j+3); /*arriba j+2 */
+						pixel_c6-> blue = pix (i+1, j+3); /*arriba j+2*/
+						pixel_d6-> blue = pix (i-1, j-3); /* arriba j+2*/
+						pixel_e6-> blue = pix (i, j-3); /*arriba j+2 */
+						pixel_f6-> blue = pix (i+1, j-3); /*arriba j+2*/
+						pixel_g6-> blue = pix (i-3, j+1); /* arriba j+2*/
+						pixel_h6-> blue = pix (i-3, j); /*arriba j+2 */
+						pixel_i6-> blue = pix (i-3, j-1); /*arriba j+2*/
+						pixel_j6-> blue = pix (i+3, j+1); /* arriba j+2*/
+						pixel_k6-> blue = pix (i+3, j); /*arriba j+2 */
+						pixel_l6-> blue = pix (i+3, j-1); /*arriba j+2*/
+						pixel_a7-> red = pix (i+2, j+3); /* arriba j+2*/
+						pixel_b7-> red = pix (i+3, j+2); /*arriba j+2 */
+						pixel_c7-> red = pix (i-2, j+3); /* arriba j+2*/
+						pixel_d7-> red = pix (i-3, j+2); /*arriba j+2 */
+						pixel_e7-> red = pix (i+2, j-3); /* arriba j+2*/
+						pixel_f7-> red = pix (i+3, j-2); /*arriba j+2 */
+						pixel_g7-> red = pix (i-2, j-3); /* arriba j+2*/
+						pixel_h7-> red = pix (i-3, j-2); /*arriba j+2 */
+						pixel_a7-> green = pix (i+2, j+3); /* arriba j+2*/
+						pixel_b7-> green = pix (i+3, j+2); /*arriba j+2 */
+						pixel_c7-> green = pix (i-2, j+3); /* arriba j+2*/
+						pixel_d7-> green = pix (i-3, j+2); /*arriba j+2 */
+						pixel_e7-> green = pix (i+2, j-3); /* arriba j+2*/
+						pixel_f7-> green = pix (i+3, j-2); /*arriba j+2 */
+						pixel_g7-> green = pix (i-2, j-3); /* arriba j+2*/
+						pixel_h7-> green = pix (i-3, j-2); /*arriba j+2 */
+						pixel_a7-> blue = pix (i+2, j+3); /* arriba j+2*/
+						pixel_b7-> blue = pix (i+3, j+2); /*arriba j+2 */
+						pixel_c7-> blue = pix (i-2, j+3); /* arriba j+2*/
+						pixel_d7-> blue = pix (i-3, j+2); /*arriba j+2 */
+						pixel_e7-> blue = pix (i+2, j-3); /* arriba j+2*/
+						pixel_f7-> blue = pix (i+3, j-2); /*arriba j+2 */
+						pixel_g7-> blue = pix (i-2, j-3); /* arriba j+2*/
+						pixel_h7-> blue = pix (i-3, j-2); /*arriba j+2 */
+								break;
+
+							default:	
+						pixel_C->red = pix (i, j);  /* Central */
+						pixel_C->green = pix (i, j);  /* Central */
+						pixel_C->blue = pix (i, j);  /* Central */
+								break;
+						}				/* -----  end switch  ----- */
 
 						/* Termina de dibujar los puntos */
 
-					}
+					}  /* *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	//		printf ( "%s", fruit);	/* Para salida a buffer */
 				save_png_to_file (& fruit, "implPostgresql.png");
 				free(fruit.pixels);
