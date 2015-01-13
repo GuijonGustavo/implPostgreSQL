@@ -5,8 +5,10 @@
 #include <math.h>
 #include <libpq-fe.h>
 /* Para compilar: http://www.labbookpages.co.uk/software/imgProc/libPNG.html */
+/*  gcc -Wall -O2 -lm -lpng -lpq -o implPostgresql implPostgresql.c -I/usr/include/postgresql/ */
+/* Color del pixel */
 
-/* A coloured pixel. */
+void usage(void);
 
 typedef struct {
 	uint8_t red;
@@ -14,7 +16,7 @@ typedef struct {
 	uint8_t blue;
 } pixel_t;
 
-/* A picture. */
+/* Para la imagen */
     
  typedef struct  {
     pixel_t *pixels;
@@ -22,32 +24,26 @@ typedef struct {
     size_t height;
 } bitmap_t;
     
-/* Given "bitmap", this returns the pixel of bitmap at the point 
-   ("x", "y"). */
+/* Dado el "bitmap", este retorna el pixel del bitmap al punto  ("x", "y"). */
+    /* Set up error handling. Este if chance y lo puedo quitar */
 
 static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 {
      return bitmap->pixels + bitmap->height * y + x;
 }
     
-/* Write "bitmap" to a PNG file specified by "path"; returns 0 on
-   success, non-zero on error. */
+/* Escribir "bitmap" al PNG file specificado por "path"; retorna 0 en exito, diferente de cero en error. */
 
-static int save_png_to_file (bitmap_t *bitmap, const char *path)
+static int save_png_to_file (bitmap_t *bitmap,const char *path)
 {
     FILE * fp;
     png_structp png_ptr = NULL;
     png_infop info_ptr = NULL;
     size_t x, y;
     png_byte ** row_pointers = NULL;
-    /* "status" contains the return value of this function. At first
-       it is set to a value which means 'failure'. When the routine
-       has finished its work, it is set to a value which means
-       'success'. */
+    /* "status" contiene el valor de retorno de esta función. La primera esta configurada al valor cual significa 'failure'. Cuando el routine hs rk, it is set to a value which means 'success'. */
     int status = -1;
-    /* The following number is set by trial and error only. I cannot
-       see where it it is documented in the libpng manual.
-    */
+    /* El siguiente número se configuró por intento y error, no se puede ver en el manual de libpng que onda con esto. */
     int pixel_size = 3;
     int depth = 8;
     
@@ -65,25 +61,24 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
     if (info_ptr == NULL) {
         goto png_create_info_struct_failed;
     }
-    /* Set up error handling. Este if chance y lo puedo quitar */
 
     if (setjmp (png_jmpbuf (png_ptr))) {
         goto png_failure;
     }
     
-    /* Set image attributes. */
+    /* Configura los atributos de la imagen */
 
     png_set_IHDR (png_ptr,
                   info_ptr,
                   bitmap->width,
                   bitmap->height,
                   depth,
-              	PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
+                  PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
                   PNG_INTERLACE_NONE,
                   PNG_COMPRESSION_TYPE_DEFAULT,
                   PNG_FILTER_TYPE_DEFAULT);
 
-    /* Initialize rows of PNG. */
+    /* Aquí se inicailizan las filas en el PNG. */
 
     row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
     for (y = 0; y < bitmap->height; ++y) {
@@ -104,19 +99,18 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
 			if(hdata==0){
 		    	*row++ = tr; /* Para controlar la transparencia. Va de 0 a 255 */
 			}else{
-				*row++ = 255; /* Con esto puede controlarse la trabnsparencia de las bolitas. Pero aún no he puesto la variable, tal vez no se necesita.  */
+				*row++ = 255; /* Con esto puede controlarse la transparencia de las bolitas. Pero aun no he puesto la variable, tal vez no se necesita.  */
 			}
         }
     }
     
-    /* Write the image data to "fp". */
+    /* Escribe la imagen data al "fp". */
 
     png_init_io (png_ptr, fp);
     png_set_rows (png_ptr, info_ptr, row_pointers);
     png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
-    /* The routine has successfully written the file, so we set
-       "status" to a value which indicates success. */
+    /* Con lo anterior se ha escrito exitosamente la routina. "status" indica el exito success. */
 
     status = 0;
     
@@ -134,9 +128,7 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
     return status;
 }
 
-/* Given "value" and "max", the maximum value which we expect "value"
-   to take, this returns an integer between 0 and 255 proportional to
-   "value" divided by "max". */
+/* Dado el "value" y "max", el máximo valo el cual esperamos "value" para tomar, este retorna un entero entre 0 y 255. */
 
 static int pix (int value, int max)
 {
@@ -144,12 +136,64 @@ static int pix (int value, int max)
         return 0;
         return (int) 255.0;
 }
-
-int main ()
+int main(int argc, char *argv[])
 {
 	int radio,x,y,r,g,b;
 	float i, j, c_x, c_y;
+	char * quer;
+    char * rojo;
+    char * verde;
+    char * azul;
+	char * radius;
+	char * trans;
+	char * ancho;
+	char * altura;
+	
 	bitmap_t fruit;
+
+/* Se decaran las banderas */
+
+
+while ((argc > 1) && (argv[1][0] == '-'))
+{
+	switch (argv[1][1])
+	{
+		case 'q': /* Query */
+			quer = &argv[1][2];
+			break;
+
+		case 'r': /* Color rojo */
+			rojo = &argv[1][2];
+			break;
+
+		case 'g': /* Color verde */
+			verde = &argv[1][2];
+			break;
+
+		case 'b': /* Color azul */
+			azul =  &argv[1][2];
+			break;
+
+		case 't': /* Color azul */
+			trans =  &argv[1][2];
+			break;
+		case 'R': /* Radio */
+			radius = &argv[1][2];
+			break;
+
+		case 'h': /* Radio */
+			usage();
+			break;
+		default:
+			printf("Wrong Argument, use -h for help: %s\n", argv[1]);
+			usage();
+	}
+
+	++argv;
+	--argc;
+}
+								
+    /* Terminan las banderas */		
 
 	/* Inicia Postgres */
 	/* Para instalar libpq-fe.h: sudo apt-get install libpq-dev */
@@ -187,7 +231,10 @@ int main ()
 //			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
 
 		/* Query 6 */
-		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
+//		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
+
+/* Query paa bandera */
+		res = PQexec(conn, quer);
 
 		if (res != NULL && PGRES_TUPLES_OK == PQresultStatus(res)){
 					/* Aquí se llama a ala funci+on dibujar */
@@ -238,12 +285,27 @@ int main ()
 						j = 1000-j; /* Para que se ajuste al cuadro pues la coordenada (0,0) está en la esquina superior izquierda.  */
 
 
+/* transparencia */
+
+
+//static int save_png_to_file (bitmap_t *bitmap,int tr, const char *path)
+//{
+//	tr = trans;
+//}
+
+
+
+
+
+						/* Fin de transparencia */
+
+
+
 /* Colores */
+								r = atoi(rojo);
+								g = atoi(verde);
+								b = atoi(azul);
 
-
-								r = 255;
-								g = 255;
-								b = 0;
 
 /* Fin colores */
 
@@ -301,9 +363,9 @@ int main ()
 						pixel_t * pixel_g7 = pixel_at (& fruit, i-2, j-3); /*arriba j+2 */
 						pixel_t * pixel_h7 = pixel_at (& fruit, i-3, j-2); /*arriba j+2*/
 
+						radio = atoi(radius);
 
-
-						switch ( radio = 1 ) {
+						switch ( radio ) {
 							case 1:
 						pixel_C->red = pix (i, j);  /* Central */
 						pixel_C->green = pix (i, j);  /* Central */
@@ -1213,6 +1275,7 @@ int main ()
 					}  /* *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	//		printf ( "%s", fruit);	/* Para salida a buffer */
 				save_png_to_file (& fruit, "implPostgresql.png");
+		//		printf("%s", &fruit);
 				free(fruit.pixels);
 				/* Termina la función dibuja */
 			//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
@@ -1225,3 +1288,20 @@ int main ()
 	/* Write the image to a file 'fruit.png'. */
 	return 0;
 }
+
+void usage(void)
+{
+	printf("Usage:\n");
+	printf(" -q<query>\n");
+	printf(" -R<radio>\n");
+	printf(" -r<color red>\n");
+	printf(" -g<color green>\n");
+	printf(" -b<color blue>\n");
+	printf(" -t<transparency>\n");
+	printf(" -h<help>\n");
+	printf(" -o<>\n");
+	printf(" -p<>\n");
+	exit (8);
+}
+
+
