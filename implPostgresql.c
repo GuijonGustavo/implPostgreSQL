@@ -138,7 +138,8 @@ static int pix (int value, int max)
 }
 int main(int argc, char *argv[])
 {
-	int radio,x,y,r,g,b, tr;
+	int radio,x,y,r,g,b, tr, larg, anch;
+    float x_m, y_m, X_m, Y_m;
 	float i, j, c_x, c_y;
 	char * quer;
     char * rojo;
@@ -147,7 +148,11 @@ int main(int argc, char *argv[])
 	char * radius;
 	char * trans;
 	char * ancho;
-	char * altura;
+	char * largo;
+	char * x_min;
+	char * y_min;
+	char * X_max;
+	char * Y_max;
 	
 	bitmap_t fruit;
 
@@ -162,15 +167,15 @@ while ((argc > 1) && (argv[1][0] == '-'))
 			quer = &argv[1][2];
 			break;
 
-		case 'r': /* Color rojo */
+		case 'r': /* rojo */
 			rojo = &argv[1][2];
 			break;
 
-		case 'g': /* Color verde */
+		case 'g': /* verde */
 			verde = &argv[1][2];
 			break;
 
-		case 'b': /* Color azul */
+		case 'b': /* azul */
 			azul =  &argv[1][2];
 			break;
 
@@ -181,6 +186,24 @@ while ((argc > 1) && (argv[1][0] == '-'))
 			radius = &argv[1][2];
 			break;
 
+		case 'x': /* x_min */
+			x_min = &argv[1][2];
+			break;
+		case 'y': /* y_min */
+			y_min = &argv[1][2];
+			break;
+		case 'X': /* X_max */
+			X_max = &argv[1][2];
+			break;
+		case 'Y': /* Y_max */
+			Y_max = &argv[1][2];
+			break;
+		case 'l': /* largo */
+			largo = &argv[1][2];
+			break;
+		case 'w': /* ancho */
+			ancho = &argv[1][2];
+			break;
 		case 'h': /* Ayuda, help */
 			usage();
 			break;
@@ -242,9 +265,10 @@ while ((argc > 1) && (argv[1][0] == '-'))
 					//SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM tabla WHERE ST_Intersects(ST_GeomFromText('POLYGON((xmin ymin,xmax ymin,xmax ymax,xmin ymax,xmin ymin))',srid),the_geom);
 
 					/* Dibuja de color el cuadrito */
-				
-					fruit.width = 1000;
-					fruit.height = 1000;
+					larg = atoi(largo);
+					anch = atoi(ancho);
+					fruit.width = anch;
+					fruit.height = larg;
 
 					fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
 
@@ -257,6 +281,9 @@ while ((argc > 1) && (argv[1][0] == '-'))
 						 * |x_max -x_min| = 256
 						 * |x - x_min|    = i
 						 * */
+
+
+
 						c_x = atof(PQgetvalue(res, p, 0));
 						c_y = atof(PQgetvalue(res, p, 1));
 
@@ -280,11 +307,19 @@ while ((argc > 1) && (argv[1][0] == '-'))
 						//	   	i = 1000*((abs(c_x-(-10657156.230149)))/337545.916861);
 						//	    j = 1000*((abs(c_y-(1866286.482351)))/337545.916861);
 						/* Query 6 */
-						i = 998*((abs(c_x-(-11320018.139346)))/1350183.667442); /* Está ajustado a 999 para que baje un pixel y se pueda dibujar toda la bolita. Caso 6 se le restan 2 */
-						j = 998*((abs(c_y-(1203424.573154)))/1350183.667442);
-						j = 1000-j; /* Para que se ajuste al cuadro pues la coordenada (0,0) está en la esquina superior izquierda.  */
+						x_m = atof(x_min);
+						y_m = atof(y_min);
+						X_m = atof(X_max);
+						Y_m = atof(Y_max);
+
+						i = anch*((abs(c_x-(x_m)))/(X_m-x_m)); /* Está ajustado a 999 para que baje un pixel y se pueda dibujar toda la bolita. Caso 6 se le restan 2 */
+						j = larg*((abs(c_y-(y_m)))/(Y_m-y_m));
+						j = larg-j; /* Para que se ajuste al cuadro pues la coordenada (0,0) está en la esquina superior izquierda.  */
 
 
+				//		i = anch*((abs(c_x-(-11320018.139346)))/1350183.667442); /* Está ajustado a 999 para que baje un pixel y se pueda dibujar toda la bolita. Caso 6 se le restan 2 */
+				//		j = larg*((abs(c_y-(1203424.573154)))/1350183.667442);
+				//		j = larg-j; /* Para que se ajuste al cuadro pues la coordenada (0,0) está en la esquina superior izquierda.  */
 /* transparencia */
 
 
@@ -1279,7 +1314,7 @@ while ((argc > 1) && (argv[1][0] == '-'))
 				save_png_to_file (& fruit, "implPostgresql.png", tra);
 				
 				
-		//		printf("%s", &fruit);
+		//		printf("%s\n", &fruit);
 				free(fruit.pixels);
 				/* Termina la función dibuja */
 			//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
