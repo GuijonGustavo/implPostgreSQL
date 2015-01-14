@@ -8,8 +8,6 @@
 /*  gcc -Wall -O2 -lm -lpng -lpq -o implPostgresql implPostgresql.c -I/usr/include/postgresql/ */
 /* Color del pixel */
 
-void usage(void);
-
 typedef struct {
 	uint8_t red;
 	uint8_t green;
@@ -24,118 +22,15 @@ typedef struct {
     size_t height;
 } bitmap_t;
     
+void usage(void);
+
+static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y);
+
+static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr);
+
+static int pix (int value, int max);
 /* Dado el "bitmap", este retorna el pixel del bitmap al punto  ("x", "y"). */
     /* Set up error handling. Este if chance y lo puedo quitar */
-
-static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
-{
-     return bitmap->pixels + bitmap->height * y + x;
-}
-    
-/* Escribir "bitmap" al PNG file specificado por "path"; retorna 0 en exito, diferente de cero en error. */
-
-static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
-{
-    FILE * fp;
-    png_structp png_ptr = NULL;
-    png_infop info_ptr = NULL;
-    size_t x, y;
-    png_byte ** row_pointers = NULL;
-    /* "status" contiene el valor de retorno de esta función. La primera esta configurada al valor cual significa 'failure'. Cuando el routine hs rk, it is set to a value which means 'success'. */
-    int status = -1;
-    /* El siguiente número se configuró por intento y error, no se puede ver en el manual de libpng que onda con esto. */
-    int pixel_size = 3;
-    int depth = 8;
-    
-    fp = fopen (path, "wb");
-    if (! fp) {
-        goto fopen_failed;
-    }
-
-    png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (png_ptr == NULL) {
-        goto png_create_write_struct_failed;
-    }
-    
-    info_ptr = png_create_info_struct (png_ptr);
-    if (info_ptr == NULL) {
-        goto png_create_info_struct_failed;
-    }
-
-    if (setjmp (png_jmpbuf (png_ptr))) {
-        goto png_failure;
-    }
-    
-    /* Configura los atributos de la imagen */
-
-    png_set_IHDR (png_ptr,
-                  info_ptr,
-                  bitmap->width,
-                  bitmap->height,
-                  depth,
-                  PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
-                  PNG_INTERLACE_NONE,
-                  PNG_COMPRESSION_TYPE_DEFAULT,
-                  PNG_FILTER_TYPE_DEFAULT);
-
-    /* Aquí se inicailizan las filas en el PNG. */
-
-    row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
-    for (y = 0; y < bitmap->height; ++y) {
-        png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * 4);
-        row_pointers[y] = row;
-		
-        for (x = 0; x < bitmap->width; ++x) {		
-			int hdata = 0;
-//			int tr;
-//			tr = tra;   /* variable de transparencia. 0 es totalmente transparente y 255 es negro */
-            pixel_t * pixel = pixel_at (bitmap, x, y);
-            *row++ = pixel->red;
-			hdata += pixel->red;
-            *row++ = pixel->green;
-			hdata += pixel-> green;
-            *row++ = pixel->blue;
-			hdata += pixel-> blue;
-			if(hdata==0){
-		    	*row++ = tr; /* Para controlar la transparencia. Va de 0 a 255 */
-			}else{
-				*row++ = 255; /* Con esto puede controlarse la transparencia de las bolitas. Pero aun no he puesto la variable, tal vez no se necesita.  */
-			}
-        }
-    }
-    
-    /* Escribe la imagen data al "fp". */
-
-    png_init_io (png_ptr, fp);
-    png_set_rows (png_ptr, info_ptr, row_pointers);
-    png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-
-    /* Con lo anterior se ha escrito exitosamente la routina. "status" indica el exito success. */
-
-    status = 0;
-    
-    for (y = 0; y < bitmap->height; y++) {
-        png_free (png_ptr, row_pointers[y]);
-    }
-    png_free (png_ptr, row_pointers);
-    
- png_failure:
- png_create_info_struct_failed:
-    png_destroy_write_struct (&png_ptr, &info_ptr);
- png_create_write_struct_failed:
-    fclose (fp);
- fopen_failed:
-    return status;
-}
-
-/* Dado el "value" y "max", el máximo valo el cual esperamos "value" para tomar, este retorna un entero entre 0 y 255. */
-
-static int pix (int value, int max)
-{
-    if (value < 0)
-        return 0;
-        return (int) 255.0;
-}
 int main(int argc, char *argv[])
 {
 	int radio,x,y,r,g,b, tr, larg, anch;
@@ -1327,6 +1222,117 @@ while ((argc > 1) && (argv[1][0] == '-'))
 	/* Write the image to a file 'fruit.png'. */
 	return 0;
 }
+
+static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
+{
+     return bitmap->pixels + bitmap->height * y + x;
+}
+    
+/* Escribir "bitmap" al PNG file specificado por "path"; retorna 0 en exito, diferente de cero en error. */
+
+static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
+{
+    FILE * fp;
+    png_structp png_ptr = NULL;
+    png_infop info_ptr = NULL;
+    size_t x, y;
+    png_byte ** row_pointers = NULL;
+    /* "status" contiene el valor de retorno de esta función. La primera esta configurada al valor cual significa 'failure'. Cuando el routine hs rk, it is set to a value which means 'success'. */
+    int status = -1;
+    /* El siguiente número se configuró por intento y error, no se puede ver en el manual de libpng que onda con esto. */
+    int pixel_size = 3;
+    int depth = 8;
+    
+    fp = fopen (path, "wb");
+    if (! fp) {
+        goto fopen_failed;
+    }
+
+    png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (png_ptr == NULL) {
+        goto png_create_write_struct_failed;
+    }
+    
+    info_ptr = png_create_info_struct (png_ptr);
+    if (info_ptr == NULL) {
+        goto png_create_info_struct_failed;
+    }
+
+    if (setjmp (png_jmpbuf (png_ptr))) {
+        goto png_failure;
+    }
+    
+    /* Configura los atributos de la imagen */
+
+    png_set_IHDR (png_ptr,
+                  info_ptr,
+                  bitmap->width,
+                  bitmap->height,
+                  depth,
+                  PNG_COLOR_TYPE_RGBA,   /* http://stackoverflow.com/questions/13911126/how-to-let-png-have-the-transparent-property */
+                  PNG_INTERLACE_NONE,
+                  PNG_COMPRESSION_TYPE_DEFAULT,
+                  PNG_FILTER_TYPE_DEFAULT);
+
+    /* Aquí se inicailizan las filas en el PNG. */
+
+    row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
+    for (y = 0; y < bitmap->height; ++y) {
+        png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * 4);
+        row_pointers[y] = row;
+		
+        for (x = 0; x < bitmap->width; ++x) {		
+			int hdata = 0;
+//			int tr;
+//			tr = tra;   /* variable de transparencia. 0 es totalmente transparente y 255 es negro */
+            pixel_t * pixel = pixel_at (bitmap, x, y);
+            *row++ = pixel->red;
+			hdata += pixel->red;
+            *row++ = pixel->green;
+			hdata += pixel-> green;
+            *row++ = pixel->blue;
+			hdata += pixel-> blue;
+			if(hdata==0){
+		    	*row++ = tr; /* Para controlar la transparencia. Va de 0 a 255 */
+			}else{
+				*row++ = 255; /* Con esto puede controlarse la transparencia de las bolitas. Pero aun no he puesto la variable, tal vez no se necesita.  */
+			}
+        }
+    }
+    
+    /* Escribe la imagen data al "fp". */
+
+    png_init_io (png_ptr, fp);
+    png_set_rows (png_ptr, info_ptr, row_pointers);
+    png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+
+    /* Con lo anterior se ha escrito exitosamente la routina. "status" indica el exito success. */
+
+    status = 0;
+    
+    for (y = 0; y < bitmap->height; y++) {
+        png_free (png_ptr, row_pointers[y]);
+    }
+    png_free (png_ptr, row_pointers);
+    
+ png_failure:
+ png_create_info_struct_failed:
+    png_destroy_write_struct (&png_ptr, &info_ptr);
+ png_create_write_struct_failed:
+    fclose (fp);
+ fopen_failed:
+    return status;
+}
+
+/* Dado el "value" y "max", el máximo valo el cual esperamos "value" para tomar, este retorna un entero entre 0 y 255. */
+
+static int pix (int value, int max)
+{
+    if (value < 0)
+        return 0;
+        return (int) 255.0;
+}
+
 
 void usage(void)
 {
