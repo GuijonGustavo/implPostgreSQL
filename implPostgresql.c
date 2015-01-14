@@ -34,7 +34,7 @@ static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
     
 /* Escribir "bitmap" al PNG file specificado por "path"; retorna 0 en exito, diferente de cero en error. */
 
-static int save_png_to_file (bitmap_t *bitmap,const char *path)
+static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
 {
     FILE * fp;
     png_structp png_ptr = NULL;
@@ -87,8 +87,8 @@ static int save_png_to_file (bitmap_t *bitmap,const char *path)
 		
         for (x = 0; x < bitmap->width; ++x) {		
 			int hdata = 0;
-			int tr;
-			tr = 0;   /* variable de transparencia. 0 es totalmente transparente y 255 es negro */
+//			int tr;
+//			tr = tra;   /* variable de transparencia. 0 es totalmente transparente y 255 es negro */
             pixel_t * pixel = pixel_at (bitmap, x, y);
             *row++ = pixel->red;
 			hdata += pixel->red;
@@ -138,7 +138,7 @@ static int pix (int value, int max)
 }
 int main(int argc, char *argv[])
 {
-	int radio,x,y,r,g,b;
+	int radio,x,y,r,g,b, tr;
 	float i, j, c_x, c_y;
 	char * quer;
     char * rojo;
@@ -174,14 +174,14 @@ while ((argc > 1) && (argv[1][0] == '-'))
 			azul =  &argv[1][2];
 			break;
 
-		case 't': /* Color azul */
+		case 't': /*  transparencia*/
 			trans =  &argv[1][2];
 			break;
 		case 'R': /* Radio */
 			radius = &argv[1][2];
 			break;
 
-		case 'h': /* Radio */
+		case 'h': /* Ayuda, help */
 			usage();
 			break;
 		default:
@@ -1274,7 +1274,11 @@ while ((argc > 1) && (argv[1][0] == '-'))
 
 					}  /* *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	//		printf ( "%s", fruit);	/* Para salida a buffer */
-				save_png_to_file (& fruit, "implPostgresql.png");
+			int tra;
+				tra = atoi(trans);
+				save_png_to_file (& fruit, "implPostgresql.png", tra);
+				
+				
 		//		printf("%s", &fruit);
 				free(fruit.pixels);
 				/* Termina la función dibuja */
