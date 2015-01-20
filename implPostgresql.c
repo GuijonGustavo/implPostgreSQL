@@ -21,16 +21,32 @@ typedef struct {
     size_t width;
     size_t height;
 } bitmap_t;
-    
+
+/* Para salvar bash */
+
+struct mem_encode
+{
+   char *buffer;
+   size_t size;
+
+};
+
+void my_png_write_data(png_structp png_ptr, png_bytep data, png_size_t length);
+
+
+void my_png_flush(png_structp png_ptr);
+
+/* Finaliza para guardar en bash */
+
 void usage(void);
 
 static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y);
 
 static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr);
+//static int save_png_to_file (bitmap_t *bitmap, int tr);
 
 static int pix (int value, int max);
-/* Dado el "bitmap", este retorna el pixel del bitmap al punto  ("x", "y"). */
-    /* Set up error handling. Este if chance y lo puedo quitar */
+
 int main(int argc, char *argv[])
 {
 	int radio,x,y,r,g,b, tr, larg, anch;
@@ -48,6 +64,11 @@ int main(int argc, char *argv[])
 	char * y_min;
 	char * X_max;
 	char * Y_max;
+	char * ip;
+	char * port;
+	char * password;
+	char * user;
+	char * database;
 	
 	bitmap_t fruit;
 
@@ -61,7 +82,22 @@ while ((argc > 1) && (argv[1][0] == '-'))
 		case 'q': /* Query */
 			quer = &argv[1][2];
 			break;
+		case 'i': /* ip */
+			ip = &argv[1][2];
+			break;
 
+		case 'd': /* database */
+			database = &argv[1][2];
+			break;
+		case 'u': /* user */
+			user = &argv[1][2];
+			break;
+		case 'p': /* password */
+			password = &argv[1][2];
+			break;
+		case 'P': /* Puerto */
+			port = &argv[1][2];
+			break;
 		case 'r': /* rojo */
 			rojo = &argv[1][2];
 			break;
@@ -123,9 +159,15 @@ while ((argc > 1) && (argv[1][0] == '-'))
 	PGresult *res;
 	float p, q;
 
-	conn = PQsetdbLogin("ip","5432",NULL,NULL,"database","user","password"); /* Con esta sentencia se establece la conexión (GENERAL)*/
-	conn = PQsetdbLogin("db0.conabio.gob.mx","5435",NULL,NULL,"snib","postgres","conabio2008"); /* Con esta sentencia se establece la conexión */
 
+//	conn = PQsetdbLogin("ip","5432",NULL,NULL,"database","user","password"); /* Con esta sentencia se establece la conexión (GENERAL)*/
+//	conn = PQsetdbLogin("db0.conabio.gob.mx","5435",NULL,NULL,"snib","postgres","conabio2008"); /* Con esta sentencia se establece la conexión */
+
+	conn = PQsetdbLogin(ip,port,NULL,NULL,database,user,password); /* Con esta sentencia se establece la conexión (GENERAL)*/
+//	conn = PQsetdbLogin("db0.conabio.gob.mx","5435",NULL,NULL,"snib","postgres","conabio2008"); /* Con esta sentencia se establece la conexión */
+
+//	conn = PQsetdbLogin("ip","5435",NULL,NULL,"database","user","password"); /* Con esta sentencia se establece la conexión (GENERAL)*/
+//	conn = PQsetdbLogin("db02.conabio.gob.mx","5435",NULL,NULL,"geodb","postgres","conabio2008"); /* Con esta sentencia se establece la conexión */
 	if (PQstatus(conn) == CONNECTION_BAD)
 
 		printf("Unable to connect to database\n");
@@ -148,8 +190,18 @@ while ((argc > 1) && (argv[1][0] == '-'))
 		/* Query 5 */
 //			res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-10657156.230149 1866286.482351,-10319610.313288 1866286.482351,-10319610.313288 2203832.399211,-10657156.230149 2203832.399211,-10657156.230149 1866286.482351))',900913),the_geom);");
 
+		
 		/* Query 6 */
 //		res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM geo_snib_plantae WHERE ST_Intersects(ST_GeomFromText('POLYGON((-11320018.139346 1203424.573154,-9969834.471904 1203424.573154,-9969834.471904 2553608.240596,-11320018.139346 2553608.240596,-11320018.139346 1203424.573154))',900913),the_geom);");
+//
+//
+//  /* Nuevo query */
+//
+//res = PQexec(conn, "SELECT ST_X(the_geom) as x,ST_Y(the_geom) as y FROM lim07gw WHERE ST_Intersects(ST_Transform(ST_GeomFromText('POLYGON((-11136670.338224 1649831.71079,-10510498.202599 1649831.71079,-10510498.202599 2276003.846415,-11136670.338224 2276003.846415,-11136670.338224 1649831.71079))',900913),4326),the_geom);");
+//
+//
+//
+
 
 /* Query paa bandera */
 		res = PQexec(conn, quer);
@@ -207,8 +259,8 @@ while ((argc > 1) && (argv[1][0] == '-'))
 						X_m = atof(X_max);
 						Y_m = atof(Y_max);
 
-						i = anch*((abs(c_x-(x_m)))/(X_m-x_m)); /* Está ajustado a 999 para que baje un pixel y se pueda dibujar toda la bolita. Caso 6 se le restan 2 */
-						j = larg*((abs(c_y-(y_m)))/(Y_m-y_m));
+						i = (anch-1)*((abs(c_x-(x_m)))/(X_m-x_m)); /* Está ajustado a 999 para que baje un pixel y se pueda dibujar toda la bolita. Caso 6 se le restan 2 */
+						j = (larg-1)*((abs(c_y-(y_m)))/(Y_m-y_m));
 						j = larg-j; /* Para que se ajuste al cuadro pues la coordenada (0,0) está en la esquina superior izquierda.  */
 
 
@@ -1203,13 +1255,12 @@ while ((argc > 1) && (argv[1][0] == '-'))
 						/* Termina de dibujar los puntos */
 
 					}  /* *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-	//		printf ( "%s", fruit);	/* Para salida a buffer */
 			int tra;
+			
 				tra = atoi(trans);
-				save_png_to_file (& fruit, "implPostgresql.png", tra);
 				
-				
-		//		printf("%s\n", &fruit);
+		    	save_png_to_file (& fruit, "wattie.png", tra);
+		   // 	save_png_to_file (& fruit, tra);
 				free(fruit.pixels);
 				/* Termina la función dibuja */
 			//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
@@ -1218,8 +1269,6 @@ while ((argc > 1) && (argv[1][0] == '-'))
 	}
 	PQfinish(conn);
 	/* Termina Postgres */
-	/* Create an image. */
-	/* Write the image to a file 'fruit.png'. */
 	return 0;
 }
 
@@ -1227,10 +1276,16 @@ static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 {
      return bitmap->pixels + bitmap->height * y + x;
 }
-    
+
+/* Para probar salida a buffer */
+
+/* Cierro salida a buffer */
+
+
 /* Escribir "bitmap" al PNG file specificado por "path"; retorna 0 en exito, diferente de cero en error. */
 
 static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
+//static int save_png_to_file (bitmap_t *bitmap, int tr)
 {
     FILE * fp;
     png_structp png_ptr = NULL;
@@ -1260,8 +1315,7 @@ static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
 
     if (setjmp (png_jmpbuf (png_ptr))) {
         goto png_failure;
-    }
-    
+    } 
     /* Configura los atributos de la imagen */
 
     png_set_IHDR (png_ptr,
@@ -1302,14 +1356,47 @@ static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
     
     /* Escribe la imagen data al "fp". */
 
+
     png_init_io (png_ptr, fp);
     png_set_rows (png_ptr, info_ptr, row_pointers);
-    png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
+	/*  static */
+    struct mem_encode state; /* Funcion de bash */
+    /*  initialise - put this before png_write_png() call */
+    state.buffer = NULL; /* funciónde bash */
+    state.size = 0; /* Funciónde bash */
+
+
+
+    png_set_write_fn(png_ptr, &state, my_png_write_data, my_png_flush);  /* Función de bash */
+	png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+
+	  
     /* Con lo anterior se ha escrito exitosamente la routina. "status" indica el exito success. */
+/*  cleanup */
 
-    status = 0;
-    
+ 	 status = 0;
+
+/* Para salvar en bash */
+
+   if(state.buffer) /* Función de bash */
+
+	   fwrite(state.buffer, state.size, 1, stdout);
+
+
+     free(state.buffer); /* Función de bash */	  
+
+/*  if my_png_flush() is not needed, change the arg to NULL */
+
+//    png_init_io (png_ptr, fp);
+//    png_set_rows (png_ptr, info_ptr, row_pointers);
+//    png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+//... call png_write_png() ...
+	
+	/*  now state.buffer contains the PNG image of size s.size bytes */
+   
+/* Fin Para salvar en bash*/ 	
+
     for (y = 0; y < bitmap->height; y++) {
         png_free (png_ptr, row_pointers[y]);
     }
@@ -1320,7 +1407,9 @@ static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
     png_destroy_write_struct (&png_ptr, &info_ptr);
  png_create_write_struct_failed:
     fclose (fp);
+
  fopen_failed:
+	
     return status;
 }
 
@@ -1338,15 +1427,54 @@ void usage(void)
 {
 	printf("Usage:\n");
 	printf(" -q<query>\n");
-	printf(" -R<radio>\n");
+	printf(" -x<x_min>\n");
+	printf(" -X<X_max>\n");
+	printf(" -y<y_min>\n");
+	printf(" -Y<Y_max>\n");
+	printf(" -l<large>\n");
+	printf(" -w<with>\n");
+	printf(" -P<Port>\n");
+	printf(" -i<ip>\n");
+	printf(" -u<usser>\n");
+	printf(" -p<password>\n");
+	printf(" -d<database>\n");
 	printf(" -r<color red>\n");
 	printf(" -g<color green>\n");
 	printf(" -b<color blue>\n");
 	printf(" -t<transparency>\n");
+	printf(" -R<radio>\n");
 	printf(" -h<help>\n");
-	printf(" -o<>\n");
-	printf(" -p<>\n");
 	exit (8);
 }
 
+/* Para salvar en bash */
 
+
+void my_png_write_data(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+	  /*  with libpng15 next line causes pointer deference error; use libpng12 */
+     struct mem_encode* p=(struct mem_encode*)png_get_io_ptr(png_ptr); /*  was png_ptr->io_ptr */
+	  size_t nsize = p->size + length;
+	 
+	   /*  allocate or grow buffer */
+	   if(p->buffer)
+		      p->buffer = realloc(p->buffer, nsize);
+	    else
+		       p->buffer = malloc(nsize);
+	
+	  if(!p->buffer)
+	      png_error(png_ptr, "Write Error");
+
+  /*  copy new bytes to end of buffer */
+	   memcpy(p->buffer + p->size, data, length);
+	   p->size += length;
+
+
+}
+
+/*  This is optional but included to show how png_set_write_fn() is called */
+void my_png_flush(png_structp png_ptr)
+{
+}
+
+/* Fin para salvar en bash */
