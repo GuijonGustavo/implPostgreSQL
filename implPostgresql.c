@@ -42,8 +42,8 @@ void usage(void);
 
 static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y);
 
-static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr);
-//static int save_png_to_file (bitmap_t *bitmap, int tr);
+//static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr);
+static int save_png_to_file (bitmap_t *bitmap, int tr);
 
 static int pix (int value, int max);
 
@@ -1259,8 +1259,8 @@ while ((argc > 1) && (argv[1][0] == '-'))
 			
 				tra = atoi(trans);
 				
-		    	save_png_to_file (& fruit, "wattie.png", tra);
-		   // 	save_png_to_file (& fruit, tra);
+		   // 	save_png_to_file (& fruit, "wattie.png ", tra);
+		    	save_png_to_file (& fruit, tra);
 				free(fruit.pixels);
 				/* Termina la función dibuja */
 			//http://books.google.com.mx/books?id=gbjIzwE2NYkC&pg=PA177&lpg=PA177&dq=PQgetvalue+integer&source=bl&ots=HbeiW5vMUS&sig=UqLioZuMs7dhoPfsPUr55EvdLmM&hl=es-419&sa=X&ei=f_lsVOSmFMaiyATGqoIQ&redir_esc=y#v=onepage&q=PQgetvalue%20integer&f=false //Página 183
@@ -1284,10 +1284,10 @@ static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 
 /* Escribir "bitmap" al PNG file specificado por "path"; retorna 0 en exito, diferente de cero en error. */
 
-static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
-//static int save_png_to_file (bitmap_t *bitmap, int tr)
+//static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
+static int save_png_to_file (bitmap_t *bitmap, int tr)
 {
-    FILE * fp;
+ //   FILE * fp;
     png_structp png_ptr = NULL;
     png_infop info_ptr = NULL;
     size_t x, y;
@@ -1298,10 +1298,10 @@ static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
     int pixel_size = 3;
     int depth = 8;
     
-    fp = fopen (path, "wb");
-    if (! fp) {
-        goto fopen_failed;
-    }
+ //   fp = fopen (path, "wb");
+ //   if (! fp) {
+//        goto fopen_failed;
+ //   }
 
     png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (png_ptr == NULL) {
@@ -1357,7 +1357,7 @@ static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
     /* Escribe la imagen data al "fp". */
 
 
-    png_init_io (png_ptr, fp);
+ //   png_init_io (png_ptr, fp);
     png_set_rows (png_ptr, info_ptr, row_pointers);
 
 	/*  static */
@@ -1406,7 +1406,7 @@ static int save_png_to_file (bitmap_t *bitmap,const char *path, int tr)
  png_create_info_struct_failed:
     png_destroy_write_struct (&png_ptr, &info_ptr);
  png_create_write_struct_failed:
-    fclose (fp);
+ //   fclose (fp);
 
  fopen_failed:
 	
